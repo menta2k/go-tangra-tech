@@ -1,0 +1,45 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Build and validate
+        run: make test
+      - name: Verify release bundles
+        shell: python
+        run: |
+          from pathlib import Path
+
+          modules = sorted(path.parent.name for path in Path('deploy/compose').glob('*/bundle.json'))
+          if not modules:
+              raise SystemExit('No module bundles found')
+          expected = {f'{module}.zip' for module in modules}
+          actual = {path.name for path in Path('dist/downloads').glob('*.zip')}
+          if actual != expected:
+              raise SystemExit(f'Bundle mismatch: missing={expected - actual}, unexpected={actual - expected}')
+      - name: Publish release with all module bundles
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          if ! gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release create "$RELEASE_TAG" --verify-tag --generate-notes --draft
+          fi
+          gh release upload "$RELEASE_TAG" dist/downloads/*.zip --clobber
+          gh release edit "$RELEASE_TAG" --draft=false

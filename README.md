@@ -85,3 +85,12 @@ If those packages are installed elsewhere, set `TANGRA_BROWSER_MODULE_ROOT` to t
 GitHub Actions runs `make test` on every push, pull request and manual run with Python 3.12. A successful run publishes the complete built site as `documentation-site`, all module ZIPs as `all-module-bundles`, and a separate `compose-<module>` artifact for every checked-in bundle (including the initial-core bundles). Artifacts are retained for 30 days and are available from the workflow run's **Artifacts** section.
 
 The artifact matrix is discovered from `deploy/compose/*/bundle.json`. CI fails if any bundle ZIP is missing or unexpected, and new bundles are included automatically. Packaging uses the reviewed manifests and existing integrity tests.
+
+## Releases
+
+Push a version tag such as `v1.0.0` to publish the module bundles as GitHub Release assets. The release workflow builds and validates the project, verifies that all checked-in bundles have ZIPs, then attaches every module ZIP to the release. New releases remain drafts until all assets have uploaded successfully. Re-running a release replaces its assets with the validated bundles from the same tag.
+
+```sh
+git tag v1.0.0
+git push origin v1.0.0
+```
