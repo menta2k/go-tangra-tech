@@ -1,0 +1,44 @@
+{
+  "module": "auth",
+  "service": "auth",
+  "project": "tangra-auth",
+  "admin_port": 9190,
+  "applications": [
+    "auth",
+    "gateway",
+    "lcm"
+  ],
+  "services": [
+    "auth",
+    "auth-bootstrap",
+    "certs-init",
+    "check",
+    "edge-cert-init",
+    "gateway",
+    "gateway-bootstrap",
+    "gateway-token",
+    "keys-init",
+    "lcm",
+    "lcm-bootstrap",
+    "mailpit",
+    "openfga",
+    "openfga-migrate",
+    "renewer",
+    "timescaledb",
+    "valkey"
+  ],
+  "files": {
+    ".env.example": "dfb7a97861f7584e739a122a230535c4c9e576c07788c015b30d4316cfff81ad",
+    "README.md": "9177bc18b3ad3b2e6e00b83aed98d135d0b3a72daf3b9c9ff76f06733c081ee4",
+    "compose.yaml": "c9dd1590c5696e134150c30081d53affb6efa6bb91c89f2ab68d9cc948ab13da",
+    "configs/auth.yaml": "60c70511df4c200a586e8791942ed76bc4e32b1b067f5663f65575f230a362da",
+    "configs/gateway.yaml": "49fcebfccee03b47fe98567db6954e9a34137b31d1a3450ef3f38932f31fe483",
+    "configs/lcm.yaml": "bd338595297fc57d454c6b050e7c5f449608796a5a9dbb494ed5c074ad1713b3",
+    "init-db.sql": "8302cfe377e2a33d7f3cdae4e81c6190fed3611af6ec4161315543a03f938d14",
+    "init-keys.sh": "8d32833997f822c36a7ae066c05959f48a1affe06f71bf6b3f3918bdc37a57cb",
+    "policies/auth.yaml": "ec27513b894ea52e74ec866c68141ce56bcfc000c37cc7068f40b1db1595dd0d",
+    "policies/gateway.yaml": "2f4808b6bd724dbea89f0b7efede03edce42dbce733b8f3670b264ff0a4f12ad",
+    "policies/lcm.yaml": "197eff8779c0bcbbfaac7f342bb2370c065dbbb36fb7b713a8465510b62d70f3"
+  },
+  "mode": "core-bootstrap"
+}

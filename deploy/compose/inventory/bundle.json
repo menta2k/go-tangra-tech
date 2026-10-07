@@ -1,0 +1,34 @@
+{
+  "module": "inventory",
+  "service": "inventory",
+  "project": "tangra-inventory",
+  "admin_port": 9810,
+  "applications": [
+    "inventory"
+  ],
+  "services": [
+    "check",
+    "inventory",
+    "keys-init",
+    "timescaledb",
+    "valkey"
+  ],
+  "files": {
+    ".env.example": "8c398c21c3f317ed25c225d87c5f3512f3db31d71498f83ee25142288847047e",
+    ".env.same-host.example": "1b4342753e372122362f87fe31e4469aae21e97cbfe8bfcd1f275e605c8a005c",
+    "README.md": "18243f389a81df9f80ff4dbfbba0218ef724cd2625ca8fca9d352b4822928687",
+    "compose.same-host.yaml": "ae383c0f9cd18a4ade00dc6eb82ad86edbd17064f7e71e75f8fbe1d4bdc88c39",
+    "compose.yaml": "1dece3ce0a40aedc1ba6022c9bea2f46adf8e603b3c514feaa0a6fd20811918c",
+    "configs/module.yaml": "9e431928c09ab5d99d7d834f7773818ed65d4e4c4429e80d635bf2612df1dc5e",
+    "configure.py": "bfd8b151b4ec1888daa6a18518ccf779b3b11ef530bbb6037636333d4ff0a71c",
+    "init-db.sql": "78d2380186fb03af3a08562a649f899d7c873cae78e94632f3fac3e7e7d55126",
+    "init-keys.sh": "8d32833997f822c36a7ae066c05959f48a1affe06f71bf6b3f3918bdc37a57cb",
+    "policies/module.yaml": "ce88ec6e92cd42241be7c921a314c047cf42accf7c33d40f28662d282bf8cbe2"
+  },
+  "mode": "existing-core",
+  "topology": "remote-core",
+  "generated_files": [
+    "runtime/config.yaml",
+    "runtime/policy.yaml"
+  ]
+}

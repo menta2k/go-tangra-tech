@@ -1,0 +1,10 @@
+services:
+  ticket:
+    networks:
+      mesh:
+        aliases:
+        - ticket
+networks:
+  mesh:
+    external: true
+    name: ${CORE_NETWORK:?Set the existing local core network}

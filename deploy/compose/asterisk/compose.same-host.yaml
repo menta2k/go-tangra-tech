@@ -1,0 +1,10 @@
+services:
+  asterisk:
+    networks:
+      mesh:
+        aliases:
+        - asterisk
+networks:
+  mesh:
+    external: true
+    name: ${CORE_NETWORK:?Set the existing local core network}

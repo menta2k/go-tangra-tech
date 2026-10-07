@@ -1,0 +1,32 @@
+{
+  "module": "hr",
+  "service": "hr",
+  "project": "tangra-hr",
+  "admin_port": 9870,
+  "applications": [
+    "hr"
+  ],
+  "services": [
+    "check",
+    "hr",
+    "timescaledb",
+    "valkey"
+  ],
+  "files": {
+    ".env.example": "edd4408440cfc0734459572493b095da4408790888e66b33d3827901fe4767d4",
+    ".env.same-host.example": "03d6f74cc13b829e990da4e1a56700a725839af66f130f62c9c144fc106e9016",
+    "README.md": "d269df2dd771f11ee5cb97226a5df7c56b813d8a02eee1792dc048e3f4fe7355",
+    "compose.same-host.yaml": "43ba68e17eb81ca854cfac0b564d5297b44a6b552fb19de6d477efed5e7dbd0e",
+    "compose.yaml": "042702965a8e7a702360c29f079b040f4d01e2294823202ca4f2b362c896df4f",
+    "configs/module.yaml": "2f389fcc086d96753d64f462c60f0b6e193528158dbef09219047a3365bda0ba",
+    "configure.py": "bfd8b151b4ec1888daa6a18518ccf779b3b11ef530bbb6037636333d4ff0a71c",
+    "init-db.sql": "a3317adf3be2b356ceaeda580d57e96e5a850684ad7046bccd2292d5dbf447ca",
+    "policies/module.yaml": "683b384394a63086dda5739d57ca4935f1c5148dc81c813c7278d5b7c7842d19"
+  },
+  "mode": "existing-core",
+  "topology": "remote-core",
+  "generated_files": [
+    "runtime/config.yaml",
+    "runtime/policy.yaml"
+  ]
+}

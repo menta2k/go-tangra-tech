@@ -1,0 +1,10 @@
+services:
+  warden:
+    networks:
+      mesh:
+        aliases:
+        - warden
+networks:
+  mesh:
+    external: true
+    name: ${CORE_NETWORK:?Set the existing local core network}

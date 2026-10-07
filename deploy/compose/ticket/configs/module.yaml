@@ -1,0 +1,87 @@
+service_name: ticket
+trust_domain: '@@TRUST_DOMAIN@@'
+env: '@@MESH_ENV@@'
+identity:
+  provider: provided
+mesh_enroll:
+  enabled: true
+  enroll_url: '@@LCM_ENROLL_URL@@'
+  lcm_grpc: '@@LCM_GRPC@@'
+  tenant_id: '@@TENANT_ID@@'
+  token_file: /tokens/enrollment.token
+  state_file: /state/svid.json
+  insecure: false
+  ca_file: /certs/ca.pem
+  server_spiffe_id: spiffe://@@TRUST_DOMAIN@@/svc/lcm
+authz:
+  source: file
+  path: /policies/ticket.yaml
+server:
+  grpc_addr: 0.0.0.0:9955
+  http_addr: 0.0.0.0:9956
+admin:
+  addr: 127.0.0.1:9840
+discovery:
+  static:
+    gateway:
+    - '@@GATEWAY_GRPC@@'
+    auth:
+    - '@@AUTH_GRPC@@'
+    lcm:
+    - '@@LCM_GRPC@@'
+    warden:
+    - warden:9843
+limits:
+  max_request_bytes: 67174400
+limits_ticket:
+  max_request_bytes: 1048576
+  max_backup_bytes: 67108864
+  max_page_size: 100
+db:
+  dsn: postgres://ticket_app:dev@local-ticket-timescaledb:5432/ticket?sslmode=disable
+  migrate_dsn: postgres://postgres:dev@local-ticket-timescaledb:5432/ticket?sslmode=disable
+valkey:
+  addresses:
+  - local-ticket-valkey:6379
+  username: ticket
+  password: dev
+  allow_plaintext: true
+kek:
+  source: file
+  path: /keys/kek
+object_store:
+  endpoint: local-ticket-rustfs:9000
+  bucket: ticket
+  region: us-east-1
+  use_ssl: false
+  access_key: paperless
+  secret_key: paperless-dev-secret
+  presign_ttl_seconds: 300
+inbound:
+  addr: 0.0.0.0:9957
+  tls_cert_file: /edge/tls.crt
+  tls_key_file: /edge/tls.key
+  relay_token_ref: file:/secrets/relay.token
+  max_body_bytes: 10485760
+  max_attachment_bytes: 26214400
+  max_parts: 100
+  max_depth: 10
+smtp:
+  host: mailpit
+  port: 1025
+  tls: none
+  allow_plaintext: true
+  mail_domain: example.org
+  timeout_seconds: 15
+rules:
+  cost_limit: 100000
+  eval_timeout_ms: 50
+  max_rules: 500
+secrets:
+  warden_service: warden
+  refresh_seconds: 300
+events:
+  enabled: true
+gateway:
+  service: gateway
+  issuer: '@@GATEWAY_ISSUER@@'

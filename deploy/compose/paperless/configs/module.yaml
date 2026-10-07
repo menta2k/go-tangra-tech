@@ -1,0 +1,78 @@
+service_name: paperless
+trust_domain: '@@TRUST_DOMAIN@@'
+env: '@@MESH_ENV@@'
+identity:
+  provider: provided
+enroll:
+  enabled: true
+  enroll_url: '@@LCM_ENROLL_URL@@'
+  lcm_grpc: '@@LCM_GRPC@@'
+  tenant_id: '@@TENANT_ID@@'
+  token_file: /tokens/enrollment.token
+  state_file: /state/svid.json
+  insecure: false
+  ca_file: /certs/ca.pem
+  server_spiffe_id: spiffe://@@TRUST_DOMAIN@@/svc/lcm
+authz:
+  source: file
+  path: /policies/paperless.yaml
+server:
+  grpc_addr: 0.0.0.0:9955
+  http_addr: 0.0.0.0:9956
+admin:
+  addr: 127.0.0.1:9790
+discovery:
+  static:
+    gateway:
+    - '@@GATEWAY_GRPC@@'
+    auth:
+    - '@@AUTH_GRPC@@'
+    lcm:
+    - '@@LCM_GRPC@@'
+limits:
+  max_request_bytes: 67158016
+limits_paperless:
+  backup_max_bytes: 33554432
+  search_max_len: 1024
+db:
+  dsn: postgres://paperless_app:dev@local-paperless-timescaledb:5432/paperless?sslmode=disable
+  migrate_dsn: postgres://postgres:dev@local-paperless-timescaledb:5432/paperless?sslmode=disable
+valkey:
+  addresses:
+  - local-paperless-valkey:6379
+  username: paperless
+  password: dev
+  allow_plaintext: true
+kek:
+  source: file
+  path: /keys/kek
+object_store:
+  endpoint: local-paperless-rustfs:9000
+  bucket: paperless
+  region: us-east-1
+  use_ssl: false
+  access_key: paperless
+  secret_key: paperless-dev-secret
+  presign_ttl_seconds: 900
+extract:
+  tika_url: http://local-paperless-tika:9998
+  gotenberg_url: http://local-paperless-gotenberg:3000
+  timeout_seconds: 120
+  max_bytes: 67108864
+uploads:
+  max_size_bytes: 67108864
+  allowed_mime: []
+jobs:
+  workers: 4
+  interval_seconds: 5
+  lease_seconds: 300
+  max_retries: 3
+  retry_delay_seconds: 30
+  backoff_multiplier: 2.0
+  job_timeout_seconds: 300
+  cleanup_days: 30
+events:
+  enabled: true
+gateway:
+  service: gateway
+  issuer: '@@GATEWAY_ISSUER@@'

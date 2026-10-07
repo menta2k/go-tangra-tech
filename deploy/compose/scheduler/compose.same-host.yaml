@@ -1,0 +1,10 @@
+services:
+  scheduler:
+    networks:
+      mesh:
+        aliases:
+        - scheduler
+networks:
+  mesh:
+    external: true
+    name: ${CORE_NETWORK:?Set the existing local core network}

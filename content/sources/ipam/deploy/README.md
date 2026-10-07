@@ -1,0 +1,142 @@
+# IPAM service — operations
+
+The **ipam** service is a tenant-scoped **IP Address Management** platform module.
+It manages hierarchical subnets (with utilization), IP addresses (first-free and
+bulk allocation, conflict detection, find/suggest), devices (interfaces, L2 links,
+OS packages), VLANs, a physical location hierarchy, and IP/host groups; and it
+performs **active network operations** — asynchronous discovery scanning
+(ICMP/SNMP/TCP), ping, out-of-band IPMI/BMC power control, and a KVM console
+proxy. It registers with the application gateway (browser API under `/api/ipam`)
+and exposes a service-to-service gRPC API (`ipam.v1`, not gateway-proxied).
+
+## Running
+
+```
+ipamsvc -config deploy/container.yaml     # run (applies migrations)
+ipamsvc bootstrap -config <cfg>           # apply migrations and exit
+```
+
+In the containerized platform stack it comes up with one command; see
+`deploy/stack/README.md`. The service:
+
+- enrolls for its mesh SVID (`spiffe://<td>/svc/ipam`) over lcm,
+- migrates its TimescaleDB schema (per-tenant RLS; all unique constraints from the
+  source preserved as the conflict-detection layer),
+- serves the browser API (via the gateway) and `ipam.v1` gRPC on `:9985`, with
+  admin health/readiness on `:9820`,
+- runs the scan-executor worker pool and the host sync (unless
+  `host_sync.enabled: false`),
+- registers routes/permissions/abilities/nav with the gateway and seeds its API
+  permissions into auth,
+- mounts the token-gated **KVM console proxy** at `/bmc/`.
+
+## Active network operations (the key security surface)
+
+These reach real hosts and are authorized, tenant-scoped, bounded and audited:
+
+- **Discovery scanning** — an async worker pool sweeps a subnet's host addresses
+  via ICMP (raw sockets; the binary is granted `cap_net_raw+ep`), bounded to at
+  most `scan.max_hosts` (1024) IPv4 hosts, with per-probe timeout and bounded
+  concurrency; alive hosts are reverse-resolved and upserted as IP records and
+  `ipam.ip_address.scanned` events are published. Optional **SNMP** discovery
+  (using the subnet's credential reference) creates/updates devices and
+  interfaces and correlates Layer-2 links. Retry-with-backoff and cancel.
+- **Ping / suggest** — ICMP reachability and free-address suggestion (ICMP + TCP).
+- **IPMI/BMC power** — read info/power-status/sensors/event-log and control power
+  (on/off/cycle/reset/soft/diag). **Platform-admin only.**
+- **KVM console proxy** — a platform admin starts a session; a token-gated proxy
+  streams the device BMC HTML5 console under the platform origin so the browser
+  never sees BMC credentials.
+
+Sandboxing: active operations are tenant-scoped and constrained to the tenant's
+own subnets/devices; power/KVM/IPMI require the platform-admin role; every active
+operation is audited; the raw-socket capability is the only elevated host
+privilege and is confined to the scanner.
+
+## Configuration
+
+`container.yaml` sections: `db`, `valkey`, `kek` (envelope key), `warden`
+(secret-reference service), `scan` (max_hosts, concurrency, timeout, workers,
+retries), `allocation` (skip_first/skip_last, reserved ranges), `ipmi`
+(timeout), `kvm` (token/session TTLs), `events`, `gateway`, `mesh_enroll`,
+`limits_ipam`, `host_sync` (see the repository README) and `task_scheduler`
+(see "Scheduled tasks" below). Framework
+`server`/`admin`/`discovery` supply the mesh listeners.
+
+## Host sync and service policy
+
+ipam calls inventory's `inventory.v1.HostReportService` as a client, so the
+rule that allows it lives in **inventory's** policy (policies are inbound), not
+in `deploy/policy.yaml` here:
+
+```yaml
+  - id: ipam-hostsync
+    from: ["spiffe://<trust-domain>/svc/ipam"]
+    to: ["inventory"]
+    operations: ["/inventory.v1.HostReportService/ListReportTenants",
+                 "/inventory.v1.HostReportService/ListHostReports",
+                 "/inventory.v1.HostReportService/GetHostReport",
+                 "/grpc.health.v1.Health/Check"]
+    effect: allow
+```
+
+Inventory additionally lists `ipam` in `host_reports.consumers`. Without the
+rule (or with an inventory older than 4.3.0) the sync status is `degraded`
+(`permission_denied` / `inventory_outdated` / `inventory_unavailable`) and
+nothing is written. Set `host_sync.enabled: false` to keep the feature off at
+rollout. Sync metrics (`hostsync_hosts_total`, `hostsync_changes_total`,
+`hostsync_entries_skipped_total`, `hostsync_apply_seconds`,
+`hostsync_degraded`) are on the admin listener.
+
+## Scheduled tasks
+
+ipam executes the scheduler's task type `ipam:scan-network` (feature 026): it
+queues scans of one subnet (`subnetId` or `cidr`) or of every subnet of the
+task's tenant (`all`, the default); in-progress, IPv6 and too-large subnets
+are skipped. The executor (`scheduler.v1.TaskExecutor/ExecuteTask`) is always
+served and admits only `spiffe://<trust-domain>/svc/scheduler` — through the
+`scheduler-execute` rule in `deploy/policy.yaml` and again in the handler.
+ipam registers its task types with the scheduler only when enabled:
+
+```yaml
+task_scheduler:
+  enabled: false        # true: register ipam's task types with the scheduler
+  service: scheduler    # discovery name of the scheduler module
+```
+
+The scheduler must be resolvable (`discovery.static.scheduler`) and its policy
+must list `spiffe://<trust-domain>/svc/ipam` in `modules-register`. Queued scans
+carry `triggered_by: auto` and are audited as `scan_started` with actor
+`service` (the scheduler) and details `trigger: scheduler`, `execution_id`.
+
+## Secrets
+
+BMC/IPMI and SNMP credentials are NEVER stored in `ipam_*` columns. A device
+holds only `ipmi_secret_ref` and a subnet holds `snmp_secret_ref` — ids of
+secrets held in **warden**. Values are fetched at use time via the warden client
+and never returned, logged, audited or exported. Owner/contact fields are
+sealed/redacted.
+
+## Allocation & conflict detection
+
+First-free allocation enumerates the CIDR, excludes network/broadcast/gateway,
+configured reserved and skip-first/skip-last ranges, and already-allocated
+addresses, and picks the lowest free (race-safe via the `(tenant_id,address)`
+unique index — a raced insert retries the next free). Utilization = used/total.
+Conflict detection (duplicate IP/VLAN/subnet/device/group) is enforced by the
+preserved unique constraints; subnet overlap and gateway-in-range are validated.
+
+## Backup
+
+`POST /api/ipam/v1/backup/export` exports the tenant's subnets, addresses,
+devices, VLANs, locations and groups, versioned by schema; secret references'
+values are never included. `POST /api/ipam/v1/backup/import` recreates them
+(mode `skip` or `overwrite`), preserving ids.
+
+## UI
+
+The remote under `services/ipam/ui` is built on the shared kit `@freya/ui` (FlyonUI + Zod,
+see `docs/frontend.md`): forms validate through Zod schemas in `src/schemas/`, the
+shell provides the theme and shared singletons, and `npm run lint` runs
+`check-no-legacy`. Rebuild the image after UI changes; the Dockerfile builds `ui/kit`
+first.

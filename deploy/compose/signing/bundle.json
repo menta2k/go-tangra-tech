@@ -1,0 +1,35 @@
+{
+  "module": "signing",
+  "service": "signing",
+  "project": "tangra-signing",
+  "admin_port": 9860,
+  "applications": [
+    "signing"
+  ],
+  "services": [
+    "check",
+    "keys-init",
+    "rustfs",
+    "signing",
+    "timescaledb",
+    "valkey"
+  ],
+  "files": {
+    ".env.example": "48e74ef1a06a196c4557108ce34dbe84ca31020db02c401929519dad1be7defe",
+    ".env.same-host.example": "6f57ede4b9e9a2f45d4f222dd0379a99ac16f044faf63ae252967db231766177",
+    "README.md": "1c71a0b6cfd73f4d77bd31d249634850f176f320cbaac51c78a0f8d40ad3e443",
+    "compose.same-host.yaml": "6fb0e641e8d9b5f648367f4f3da39b90013d9b44903f7ff7ee209e6103498f24",
+    "compose.yaml": "c18e16ad605eeac5976e6f3e7e8f64b323a65741d17c71ec3ccbb98900d91dba",
+    "configs/module.yaml": "deca273d314ae2e0eb95f09121df7170e21d77e8abba88469513d3d5cc2f0a30",
+    "configure.py": "bfd8b151b4ec1888daa6a18518ccf779b3b11ef530bbb6037636333d4ff0a71c",
+    "init-db.sql": "d6d0b443148aabfc5f237880fd42a65e7c6b76d0f3e28930b9b9b60446e3c89e",
+    "init-keys.sh": "8d32833997f822c36a7ae066c05959f48a1affe06f71bf6b3f3918bdc37a57cb",
+    "policies/module.yaml": "88a108745a0bed9f51d82c1da3810d57ae77e2a7bec7c85fd7000f8a8446a78f"
+  },
+  "mode": "existing-core",
+  "topology": "remote-core",
+  "generated_files": [
+    "runtime/config.yaml",
+    "runtime/policy.yaml"
+  ]
+}

@@ -1,0 +1,7 @@
+version: asterisk-1
+rules:
+  - id: portal-browser-and-remote
+    from: ["spiffe://@@TRUST_DOMAIN@@/svc/gateway"]
+    to: ["asterisk"]
+    operations: ["GET *", "HEAD *"]
+    effect: allow

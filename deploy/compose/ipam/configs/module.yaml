@@ -1,0 +1,80 @@
+service_name: ipam
+trust_domain: '@@TRUST_DOMAIN@@'
+env: '@@MESH_ENV@@'
+identity:
+  provider: provided
+mesh_enroll:
+  enabled: true
+  enroll_url: '@@LCM_ENROLL_URL@@'
+  lcm_grpc: '@@LCM_GRPC@@'
+  tenant_id: '@@TENANT_ID@@'
+  token_file: /tokens/enrollment.token
+  state_file: /state/svid.json
+  insecure: false
+  ca_file: /certs/ca.pem
+  server_spiffe_id: spiffe://@@TRUST_DOMAIN@@/svc/lcm
+authz:
+  source: file
+  path: /policies/ipam.yaml
+server:
+  grpc_addr: 0.0.0.0:9985
+  http_addr: 0.0.0.0:9986
+admin:
+  addr: 127.0.0.1:9820
+discovery:
+  static:
+    gateway:
+    - '@@GATEWAY_GRPC@@'
+    auth:
+    - '@@AUTH_GRPC@@'
+    lcm:
+    - '@@LCM_GRPC@@'
+    warden:
+    - warden:9843
+    inventory:
+    - inventory:9975
+    scheduler:
+    - scheduler:9905
+limits:
+  max_request_bytes: 16842752
+limits_ipam:
+  max_request_bytes: 16842752
+  max_backup_bytes: 33554432
+db:
+  dsn: postgres://ipam_app:dev@local-ipam-timescaledb:5432/ipam?sslmode=disable
+  migrate_dsn: postgres://postgres:dev@local-ipam-timescaledb:5432/ipam?sslmode=disable
+valkey:
+  addresses:
+  - local-ipam-valkey:6379
+  username: ipam
+  password: dev
+  allow_plaintext: true
+kek:
+  source: file
+  path: /keys/kek
+warden:
+  service: warden
+scan:
+  max_hosts: 1024
+  concurrency: 50
+  timeout_ms: 1000
+  workers: 3
+  max_retries: 3
+allocation:
+  skip_first: 0
+  skip_last: 0
+  reserved_ranges: []
+ipmi:
+  timeout_seconds: 10
+kvm:
+  token_ttl_seconds: 300
+  session_seconds: 3600
+  console_origin: https://localhost:8444
+events:
+  enabled: true
+gateway:
+  service: gateway
+  issuer: '@@GATEWAY_ISSUER@@'
+task_scheduler:
+  enabled: true
+  service: scheduler

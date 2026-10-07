@@ -1,0 +1,34 @@
+{
+  "module": "ipam",
+  "service": "ipam",
+  "project": "tangra-ipam",
+  "admin_port": 9820,
+  "applications": [
+    "ipam"
+  ],
+  "services": [
+    "check",
+    "ipam",
+    "keys-init",
+    "timescaledb",
+    "valkey"
+  ],
+  "files": {
+    ".env.example": "ac2d6ba6c01dc1136a81b9ef860b183bce452c41bdfd03a90fe31d42c376ebe9",
+    ".env.same-host.example": "a48e0c1771f84f2fd3dc99258fca7aa68f48d09bae0f5591a6e3af3c37cd209e",
+    "README.md": "b8d5871d694267e9a3833d6370d841563d39b43c5f0afe78557220454fbf0fc2",
+    "compose.same-host.yaml": "cb05318faf5737eeefd9d882c75a3d110d9bac6811e2e0ef1feb6b9b69ee8526",
+    "compose.yaml": "54ccbafb906fc58a1f5a03b83a9812c12bed02af96269f8ad7b60040b6e37d51",
+    "configs/module.yaml": "9e0bc9a0ddf0658e80e6c22f71d13dae2988d9995e86cc96a69fac9607b75871",
+    "configure.py": "bfd8b151b4ec1888daa6a18518ccf779b3b11ef530bbb6037636333d4ff0a71c",
+    "init-db.sql": "72944169700b7b6f5511d9b760cf25017ccf5e02c291ea00db3c4ed31294b28d",
+    "init-keys.sh": "8d32833997f822c36a7ae066c05959f48a1affe06f71bf6b3f3918bdc37a57cb",
+    "policies/module.yaml": "fe04f72334d7fe6d8e47109ea5ca3c21fa441ad1a2b99fd6978114c17a501457"
+  },
+  "mode": "existing-core",
+  "topology": "remote-core",
+  "generated_files": [
+    "runtime/config.yaml",
+    "runtime/policy.yaml"
+  ]
+}

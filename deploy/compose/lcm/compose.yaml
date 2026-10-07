@@ -1,0 +1,469 @@
+# Standalone workstation installation with its own control plane.
+# Generated from recorded public sources; review image availability before use.
+name: tangra-lcm
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    environment:
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: postgres
+    volumes:
+    - ./init-db.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
+    - database-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+      - CMD
+      - pg_isready
+      - -U
+      - postgres
+      - -h
+      - 127.0.0.1
+      - -p
+      - '5432'
+      interval: 3s
+      timeout: 3s
+      retries: 60
+      start_period: 5s
+    restart: unless-stopped
+  valkey:
+    image: valkey/valkey:8
+    command:
+    - valkey-server
+    - --requirepass
+    - dev
+    - --user
+    - gateway
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - auth
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - lcm
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - notification
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - warden
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - deployer
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - paperless
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - inventory
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - ipam
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - asset
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - ticket
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - dns
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - signing
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - hr
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --appendonly
+    - 'yes'
+    healthcheck:
+      test:
+      - CMD
+      - valkey-cli
+      - -a
+      - dev
+      - ping
+      interval: 3s
+      timeout: 3s
+      retries: 40
+    volumes:
+    - valkey-data:/data
+    restart: unless-stopped
+  openfga-migrate:
+    image: openfga/openfga:v1.20.0
+    command:
+    - migrate
+    environment:
+      OPENFGA_DATASTORE_ENGINE: postgres
+      OPENFGA_DATASTORE_URI: postgres://postgres:dev@timescaledb:5432/openfga?sslmode=disable
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+    restart: 'no'
+  openfga:
+    image: openfga/openfga:v1.20.0
+    command:
+    - run
+    environment:
+      OPENFGA_DATASTORE_ENGINE: postgres
+      OPENFGA_DATASTORE_URI: postgres://postgres:dev@timescaledb:5432/openfga?sslmode=disable
+      OPENFGA_AUTHN_METHOD: preshared
+      OPENFGA_AUTHN_PRESHARED_KEYS: dev-openfga-key
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      openfga-migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+    - 127.0.0.1:${MAILPIT_PORT:-8025}:8025
+    restart: unless-stopped
+  certs-init:
+    image: alpine:3.20
+    user: 0:0
+    entrypoint:
+    - sh
+    - -c
+    - chown -R 10001:10001 /certs && chmod 0755 /certs
+    volumes:
+    - certs:/certs
+    restart: 'no'
+  edge-cert-init:
+    image: alpine:3.20
+    user: 0:0
+    entrypoint:
+    - sh
+    - -c
+    command:
+    - "set -e\nif [ -s /edge/tls.crt ] && [ -s /edge/tls.key ]; then echo \"edge certificate present, keeping it\"; exit 0; fi\napk add --no-cache openssl >/dev/null\nopenssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:P-256 -nodes \\\n  -keyout /edge/tls.key -out /edge/tls.crt -days 825 \\\n  -subj \"/CN=localhost/O=Freya dev stack\" \\\n  -addext \"subjectAltName=DNS:localhost,IP:127.0.0.1\" \\\n  -addext \"extendedKeyUsage=serverAuth\" \\\n  -addext \"keyUsage=digitalSignature\"\nchmod 0600 /edge/tls.key && chmod 0644 /edge/tls.crt\necho \"edge certificate generated\"\n"
+    volumes:
+    - edge-cert:/edge
+    restart: 'no'
+  lcm-bootstrap:
+    image: ghcr.io/go-tangra/go-tangra-lcm:${LCM_VERSION:-4.7.0}
+    user: 0:0
+    command:
+    - bootstrap
+    - -config
+    - deploy/container.yaml
+    - -out
+    - /certs
+    - -services
+    - gateway,auth,lcm,notification
+    - -ttl
+    - ${CERT_TTL:-12h}
+    volumes:
+    - certs:/certs
+    - ./configs/lcm.yaml:/app/deploy/container.yaml:ro
+    - ./policies/lcm.yaml:/policies/lcm.yaml:ro
+    - lcm-keys:/keys:ro
+    depends_on:
+      certs-init:
+        condition: service_completed_successfully
+      timescaledb:
+        condition: service_healthy
+      keys-init:
+        condition: service_completed_successfully
+    restart: 'no'
+  renewer:
+    image: ghcr.io/go-tangra/go-tangra-lcm:${LCM_VERSION:-4.7.0}
+    user: 0:0
+    entrypoint:
+    - sh
+    - -c
+    command:
+    - while true; do lcmsvc bootstrap -config deploy/container.yaml -out /certs -services gateway,auth,lcm,notification -ttl ${CERT_TTL:-12h} && echo renewed $$(date -u +%H:%M:%S); sleep ${RENEW_INTERVAL:-21600}; done
+    volumes:
+    - certs:/certs
+    - ./configs/lcm.yaml:/app/deploy/container.yaml:ro
+    - ./policies/lcm.yaml:/policies/lcm.yaml:ro
+    - lcm-keys:/keys:ro
+    depends_on:
+      lcm-bootstrap:
+        condition: service_completed_successfully
+      keys-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+  gateway-bootstrap:
+    image: ghcr.io/go-tangra/go-tangra-portal:${PORTAL_VERSION:-4.6.0}
+    command:
+    - bootstrap
+    - -config
+    - deploy/container.yaml
+    - -allow
+    - spiffe://example.org/svc/auth=/api/v1,/authorize,/.well-known,/console;auth
+    - -allow
+    - spiffe://example.org/svc/lcm=/api/lcm;lcm
+    volumes:
+    - certs:/certs:ro
+    - ./configs/gateway.yaml:/app/deploy/container.yaml:ro
+    - ./policies/gateway.yaml:/policies/gateway.yaml:ro
+    restart: 'no'
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      lcm-bootstrap:
+        condition: service_completed_successfully
+      keys-init:
+        condition: service_completed_successfully
+  auth-bootstrap:
+    image: ghcr.io/go-tangra/go-tangra-auth:${AUTH_VERSION:-4.7.0}
+    user: 0:0
+    command:
+    - bootstrap
+    - -config
+    - deploy/container.yaml
+    - -operator-email
+    - ${OPERATOR_EMAIL:?Set OPERATOR_EMAIL in .env}
+    volumes:
+    - certs:/certs:ro
+    - ./configs/auth.yaml:/app/deploy/container.yaml:ro
+    - ./policies/auth.yaml:/policies/auth.yaml:ro
+    - auth-keys:/keys:ro
+    restart: 'no'
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+      openfga:
+        condition: service_started
+      lcm-bootstrap:
+        condition: service_completed_successfully
+      keys-init:
+        condition: service_completed_successfully
+  lcm:
+    image: ghcr.io/go-tangra/go-tangra-lcm:${LCM_VERSION:-4.7.0}
+    user: 0:0
+    command:
+    - -config
+    - deploy/container.yaml
+    volumes:
+    - ./configs/lcm.yaml:/app/deploy/container.yaml:ro
+    - ./policies/lcm.yaml:/policies/lcm.yaml:ro
+    - lcm-keys:/keys:ro
+    - certs:/certs:ro
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - -qO-
+      - http://127.0.0.1:9591/readyz
+      interval: 5s
+      timeout: 3s
+      retries: 40
+      start_period: 5s
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+      lcm-bootstrap:
+        condition: service_completed_successfully
+      keys-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+  auth:
+    image: ghcr.io/go-tangra/go-tangra-auth:${AUTH_VERSION:-4.7.0}
+    user: 0:0
+    command:
+    - -config
+    - deploy/container.yaml
+    environment:
+      FREYA_ADVERTISE_HOST: auth
+    volumes:
+    - certs:/certs:ro
+    - ./configs/auth.yaml:/app/deploy/container.yaml:ro
+    - ./policies/auth.yaml:/policies/auth.yaml:ro
+    - auth-keys:/keys:ro
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - -qO-
+      - http://127.0.0.1:9190/readyz
+      interval: 5s
+      timeout: 3s
+      retries: 40
+      start_period: 5s
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+      openfga:
+        condition: service_started
+      lcm-bootstrap:
+        condition: service_completed_successfully
+      auth-bootstrap:
+        condition: service_completed_successfully
+      keys-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+  gateway-token:
+    image: ghcr.io/go-tangra/go-tangra-auth:${AUTH_VERSION:-4.7.0}
+    user: 0:0
+    command:
+    - mint-enrollment-token
+    - -config
+    - deploy/container.yaml
+    - -spiffe
+    - spiffe://example.org/svc/gateway
+    - -ttl
+    - 30m
+    - -out
+    - /tokens/gateway.token
+    volumes:
+    - tokens:/tokens
+    - certs:/certs:ro
+    - ./configs/auth.yaml:/app/deploy/container.yaml:ro
+    - ./policies/auth.yaml:/policies/auth.yaml:ro
+    - auth-keys:/keys:ro
+    restart: 'no'
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+      openfga:
+        condition: service_started
+      auth-bootstrap:
+        condition: service_completed_successfully
+      keys-init:
+        condition: service_completed_successfully
+  gateway:
+    image: ghcr.io/go-tangra/go-tangra-portal:${PORTAL_VERSION:-4.6.0}
+    user: 0:0
+    ports:
+    - 127.0.0.1:${GATEWAY_PORT:-8443}:8443
+    command:
+    - -config
+    - deploy/container.yaml
+    volumes:
+    - tokens:/tokens:ro
+    - gateway-state:/state
+    - edge-cert:/edge:ro
+    - ./configs/gateway.yaml:/app/deploy/container.yaml:ro
+    - ./policies/gateway.yaml:/policies/gateway.yaml:ro
+    - certs:/certs:ro
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - -qO-
+      - http://127.0.0.1:9290/readyz
+      interval: 5s
+      timeout: 3s
+      retries: 60
+      start_period: 10s
+    depends_on:
+      edge-cert-init:
+        condition: service_completed_successfully
+      timescaledb:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+      auth:
+        condition: service_healthy
+      lcm:
+        condition: service_healthy
+      lcm-bootstrap:
+        condition: service_completed_successfully
+      gateway-bootstrap:
+        condition: service_completed_successfully
+      gateway-token:
+        condition: service_completed_successfully
+      keys-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+  keys-init:
+    image: alpine:3.20
+    user: 0:0
+    entrypoint:
+    - sh
+    - /init-keys.sh
+    volumes:
+    - ./init-keys.sh:/init-keys.sh:ro
+    - auth-keys:/keys/auth
+    - lcm-keys:/keys/lcm
+    restart: 'no'
+  check:
+    image: alpine:3.20
+    profiles:
+    - checks
+    network_mode: service:lcm
+    entrypoint:
+    - sh
+    - -ec
+    command:
+    - for i in $$(seq 1 60); do if wget -qO- http://127.0.0.1:9591/healthz && wget -qO- http://127.0.0.1:9591/readyz; then echo; echo "Health and readiness passed"; exit 0; fi; sleep 2; done; exit 1
+    depends_on:
+      lcm:
+        condition: service_started
+    restart: 'no'
+volumes:
+  database-data: {}
+  valkey-data: {}
+  certs: {}
+  edge-cert: {}
+  lcm-keys: {}
+  auth-keys: {}
+  tokens: {}
+  gateway-state: {}

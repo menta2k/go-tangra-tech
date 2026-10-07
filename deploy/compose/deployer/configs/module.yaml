@@ -1,0 +1,65 @@
+service_name: deployer
+trust_domain: '@@TRUST_DOMAIN@@'
+env: '@@MESH_ENV@@'
+identity:
+  provider: provided
+enroll:
+  enabled: true
+  enroll_url: '@@LCM_ENROLL_URL@@'
+  lcm_grpc: '@@LCM_GRPC@@'
+  tenant_id: '@@TENANT_ID@@'
+  token_file: /tokens/enrollment.token
+  state_file: /state/svid.json
+  insecure: false
+  ca_file: /certs/ca.pem
+  server_spiffe_id: spiffe://@@TRUST_DOMAIN@@/svc/lcm
+authz:
+  source: file
+  path: /policies/deployer.yaml
+server:
+  grpc_addr: 0.0.0.0:9945
+  http_addr: 0.0.0.0:9946
+admin:
+  addr: 127.0.0.1:9690
+discovery:
+  static:
+    gateway:
+    - '@@GATEWAY_GRPC@@'
+    auth:
+    - '@@AUTH_GRPC@@'
+    lcm:
+    - '@@LCM_GRPC@@'
+limits:
+  max_request_bytes: 16842752
+limits_deployer:
+  backup_max_bytes: 16777216
+  config_max_bytes: 16384
+  filter_max_length: 256
+db:
+  dsn: postgres://deployer_app:dev@local-deployer-timescaledb:5432/deployer?sslmode=disable
+  migrate_dsn: postgres://postgres:dev@local-deployer-timescaledb:5432/deployer?sslmode=disable
+valkey:
+  addresses:
+  - local-deployer-valkey:6379
+  username: deployer
+  password: dev
+  allow_plaintext: true
+kek:
+  source: file
+  path: /keys/kek
+jobs:
+  workers: 5
+  interval_seconds: 5
+  lease_seconds: 300
+  max_retries: 3
+  retry_delay_seconds: 60
+  backoff_multiplier: 2.0
+  job_timeout_seconds: 300
+  cleanup_days: 30
+events:
+  enabled: true
+gateway:
+  service: gateway
+  issuer: '@@GATEWAY_ISSUER@@'
+lcm:
+  service: lcm

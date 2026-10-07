@@ -1,0 +1,242 @@
+# Module enrollment into an existing core; no new Auth, Portal or LCM.
+name: tangra-scheduler
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    environment:
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: postgres
+    volumes:
+    - ./init-db.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
+    - database-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+      - CMD
+      - pg_isready
+      - -U
+      - postgres
+      - -h
+      - 127.0.0.1
+      - -p
+      - '5432'
+      interval: 3s
+      timeout: 3s
+      retries: 60
+      start_period: 5s
+    restart: unless-stopped
+    depends_on: {}
+    networks:
+      default:
+        aliases:
+        - local-scheduler-timescaledb
+  valkey:
+    image: valkey/valkey:8
+    command:
+    - valkey-server
+    - --requirepass
+    - dev
+    - --user
+    - gateway
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - auth
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - lcm
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - notification
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - warden
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - deployer
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - paperless
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - inventory
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - ipam
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - asset
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - ticket
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - dns
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - signing
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - hr
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --appendonly
+    - 'yes'
+    - --user
+    - scheduler
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    healthcheck:
+      test:
+      - CMD
+      - valkey-cli
+      - -a
+      - dev
+      - ping
+      interval: 3s
+      timeout: 3s
+      retries: 40
+    volumes:
+    - valkey-data:/data
+    restart: unless-stopped
+    depends_on: {}
+    networks:
+      default:
+        aliases:
+        - local-scheduler-valkey
+  scheduler:
+    image: ghcr.io/go-tangra/go-tangra-scheduler:${SCHEDULER_VERSION:-4.1.2}
+    user: 0:0
+    command:
+    - -config
+    - deploy/container.yaml
+    restart: unless-stopped
+    volumes:
+    - ./runtime/config.yaml:deploy/container.yaml:ro
+    - ${ENROLLMENT_TOKEN_FILE:-./private/enrollment.token}:/tokens/enrollment.token:ro
+    - ${MESH_CA_FILE:-./private/ca.pem}:/certs/ca.pem:ro
+    - scheduler-state:/state
+    - ./runtime/policy.yaml:/policies/scheduler.yaml:ro
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+      scheduler-bootstrap:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - -qO-
+      - http://127.0.0.1:9800/readyz
+      interval: 5s
+      timeout: 3s
+      retries: 40
+    networks:
+      default:
+        aliases:
+        - scheduler
+    environment:
+      FREYA_ADVERTISE_HOST: ${MODULE_ADVERTISE_HOST:?Set a module host reachable from the core}
+    ports:
+    - ${MODULE_BIND_IP:?Set the private module host bind IP}:9905:9905
+    - ${MODULE_BIND_IP:?Set the private module host bind IP}:9906:9906
+  scheduler-bootstrap:
+    image: ghcr.io/go-tangra/go-tangra-scheduler:${SCHEDULER_VERSION:-4.1.2}
+    user: 0:0
+    command:
+    - bootstrap
+    - -config
+    - deploy/container.yaml
+    restart: 'no'
+    volumes:
+    - ./runtime/config.yaml:deploy/container.yaml:ro
+    - ${ENROLLMENT_TOKEN_FILE:-./private/enrollment.token}:/tokens/enrollment.token:ro
+    - ${MESH_CA_FILE:-./private/ca.pem}:/certs/ca.pem:ro
+    - scheduler-state:/state
+    - ./runtime/policy.yaml:/policies/scheduler.yaml:ro
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+    networks:
+    - default
+  check:
+    image: alpine:3.20
+    profiles:
+    - checks
+    network_mode: service:scheduler
+    entrypoint:
+    - sh
+    - -ec
+    command:
+    - for i in $$(seq 1 60); do if wget -qO- http://127.0.0.1:9800/healthz && wget -qO- http://127.0.0.1:9800/readyz; then echo; echo "Health and readiness passed"; exit 0; fi; sleep 2; done; exit 1
+    depends_on:
+      scheduler:
+        condition: service_started
+    restart: 'no'
+    volumes: []
+volumes:
+  database-data: {}
+  valkey-data: {}
+  scheduler-state: {}
+networks:
+  default: {}

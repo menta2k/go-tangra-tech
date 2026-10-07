@@ -1,0 +1,35 @@
+{
+  "module": "asset",
+  "service": "asset",
+  "project": "tangra-asset",
+  "admin_port": 9830,
+  "applications": [
+    "asset"
+  ],
+  "services": [
+    "asset",
+    "check",
+    "keys-init",
+    "rustfs",
+    "timescaledb",
+    "valkey"
+  ],
+  "files": {
+    ".env.example": "5309c29c891f22f355b2646a8588ed6bbb9eff4f8cf8c65cfb57a23b3835224a",
+    ".env.same-host.example": "8ef090b34425952237005850ca05fd81d3442bb1925a60db14745a9b438aa80f",
+    "README.md": "87cdde2ef6a1de9b390211d08ef203326564264210c05463a4fecd6324275aff",
+    "compose.same-host.yaml": "06a78414e2f08e43a8a65979dfad2fb0e283b872e9e40b71985d4bf7e030a523",
+    "compose.yaml": "a65e3a117c9338248c96d66fa73c559cf484b87e08787735c57441026f437a08",
+    "configs/module.yaml": "d00ebdf41fc9cc3f4218f9ff3fca1b1c3f84b66deb55333f3d8b8ef270bf0fd7",
+    "configure.py": "bfd8b151b4ec1888daa6a18518ccf779b3b11ef530bbb6037636333d4ff0a71c",
+    "init-db.sql": "494cde2cac191a19ce7b8bd9a72e18051a502df281f81a0ae3a38cd88060f434",
+    "init-keys.sh": "8d32833997f822c36a7ae066c05959f48a1affe06f71bf6b3f3918bdc37a57cb",
+    "policies/module.yaml": "7f5901a72ca9b1cf6f1c192b823dffb3175d15f6112b64d3a0ecd2e2cbe3bc1c"
+  },
+  "mode": "existing-core",
+  "topology": "remote-core",
+  "generated_files": [
+    "runtime/config.yaml",
+    "runtime/policy.yaml"
+  ]
+}

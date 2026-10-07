@@ -1,0 +1,258 @@
+# Go-Tangra Platform
+
+Secure service framework, shared UI kit and development stack.
+
+**Architecture role**: Foundation. [See the complete component map](architecture/index.html).
+
+**Documented source**: `2e9c08014dce` · nearest local service tag `v4.3.1` · v4 major. [Repository at this revision](https://github.com/go-tangra/go-tangra/tree/2e9c08014dce3d7e0efd24699f4c6b532b71ee85). Tags are source metadata, not a claim of image publication or cross-module compatibility.
+
+
+## Permissions and authorization
+
+The framework provides service identity and service-policy enforcement; it has no standalone user permission catalogue. Each service declares its own module-scoped permissions. See the [permission assignment and enforcement guide](architecture/security.html#assign-and-verify-permissions).
+## Consume the platform
+
+The platform is a framework/library, not a standalone service image. Consume it in a Go service using the documented release or replace the version with your chosen compatible v4 release:
+
+```sh
+GOWORK=off go get github.com/go-tangra/go-tangra/v4@v4.0.0
+```
+
+This example is the upstream README's version, not a declaration that it is the newest release. SDKs use their independently published `sdk/vX.Y.Z` tags and Go import paths ending `/sdk/v4`; add only the services whose APIs you consume.
+
+## Shared libraries
+
+- **Freya** supplies identity, transports, service policy, audit, observability, discovery and request limits.
+- **`@go-tangra/ui`** supplies shared frontend components, forms, API client and theme. It is distributed through GitHub Packages; a token with `read:packages` is needed for installation.
+- **audit-timescale** is an optional TimescaleDB audit sink. [Detailed consumption](sources/platform/contrib/audit-timescale/README.html).
+- **policy-valkey** provides optional policy distribution and revocation integration. [Detailed consumption](sources/platform/contrib/policy-valkey/README.html).
+- **Service SDKs** expose typed contracts and clients. Their nested modules are consumed by other services rather than deployed as additional daemons.
+
+The [UI kit reference](sources/platform/ui/kit/README.html), [contrib overview](sources/platform/contrib/README.html), and each service README describe exact package contracts. The same library consumption applies whether the resulting service runs natively or in Docker.
+
+## Architecture and defaults
+
+[Security model](architecture/security.html) · [Framework configuration](architecture/configuration.html) · [Frontend architecture](architecture/frontend.html) · [Dependency justification](architecture/dependencies.html)
+
+## Detailed source references
+
+- [README.md](sources/platform/README.html) — captured at `2e9c08014dce`.
+- [docs/configuration.md](sources/platform/docs/configuration.html) — captured at `2e9c08014dce`.
+- [docs/dependencies.md](sources/platform/docs/dependencies.html) — captured at `2e9c08014dce`.
+- [docs/frontend.md](sources/platform/docs/frontend.html) — captured at `2e9c08014dce`.
+- [docs/security-model.md](sources/platform/docs/security-model.html) — captured at `2e9c08014dce`.
+- [deploy/stack/README.md](sources/platform/deploy/stack/README.html) — captured at `2e9c08014dce`.
+- [deploy/stack/ENROLLMENT.md](sources/platform/deploy/stack/ENROLLMENT.html) — captured at `2e9c08014dce`.
+- [contrib/README.md](sources/platform/contrib/README.html) — captured at `2e9c08014dce`.
+- [contrib/audit-timescale/README.md](sources/platform/contrib/audit-timescale/README.html) — captured at `2e9c08014dce`.
+- [contrib/policy-valkey/README.md](sources/platform/contrib/policy-valkey/README.html) — captured at `2e9c08014dce`.
+- [ui/kit/README.md](sources/platform/ui/kit/README.html) — captured at `2e9c08014dce`.
+
+## Upstream overview: go-tangra v4 platform
+
+`github.com/go-tangra/go-tangra/v4` is the platform of go-tangra: the Go
+microservice framework every go-tangra service is built on, its optional contrib
+modules, the shared web UI kit `@go-tangra/ui`, and the containerized dev stack
+that runs the whole platform. The services themselves live in their own
+`go-tangra-<name>` repositories and consume this module and the kit by version.
+
+The framework (Go package `freya`) is built on
+[go-kratos v3](https://github.com/go-kratos/kratos): every channel between
+services is **mutually authenticated, encrypted, authorized, and audited by
+construction**. A service developer supplies a logical peer name and a payload;
+the framework supplies the security.
+
+Governed by the [project constitution](https://github.com/go-tangra/go-tangra/blob/2e9c08014dce3d7e0efd24699f4c6b532b71ee85/.specify/memory/constitution.md)
+(v1.0.0): secure by default, zero trust, defence in depth, test-first with
+security verification, observability, supply-chain integrity, simplicity.
+
+## What you get
+
+| Concern | How the framework handles it |
+|---------|------------------------------|
+| Identity | X.509 SVIDs with SPIFFE IDs (`spiffe://<trust-domain>/svc/<name>`) from the SPIFFE Workload API (default), PEM files, or an explicit local-dev CA |
+| Transport | TLS 1.3 only, client certificates required, no downgrade path; peers are verified by identity, never by address |
+| Authorization | Deny-by-default policy (YAML/JSON), per service and per operation, hot-reloaded from a file or Valkey |
+| Rotation | Short-lived identities renewed automatically; existing calls are never interrupted; an expired identity fails closed |
+| Audit | Schema-stable events for every refusal and identity/policy lifecycle change; secrets can never reach logs |
+| Observability | Correlation IDs across hops, OpenTelemetry traces and metrics, per-hop request log, separate admin listener |
+| Limits | 1 MiB bodies, 8 KiB headers, 30 s requests, 100 streams/connection, 10 s handshakes — on by default |
+
+## Repositories
+
+| Repository | Contents | Image |
+|---|---|---|
+| [go-tangra/go-tangra](https://github.com/go-tangra/go-tangra) (this repo) | framework module, `contrib/*`, `@go-tangra/ui` kit, `deploy/stack` | — |
+| [go-tangra-auth](https://github.com/go-tangra/go-tangra-auth) | tenants, identity, tokens, OpenFGA decisions, operator console; `sdk/` | `ghcr.io/go-tangra/go-tangra-auth` |
+| [go-tangra-portal](https://github.com/go-tangra/go-tangra-portal) | application gateway: edge, module registration, shell host; `sdk/` | `ghcr.io/go-tangra/go-tangra-portal` |
+| [go-tangra-lcm](https://github.com/go-tangra/go-tangra-lcm) | certificate lifecycle: mesh CA, SVID enrollment, ACME; `sdk/` | `ghcr.io/go-tangra/go-tangra-lcm` |
+| [go-tangra-warden](https://github.com/go-tangra/go-tangra-warden) | secrets vault (HashiCorp Vault backed); `sdk/` | `ghcr.io/go-tangra/go-tangra-warden` |
+| [go-tangra-notification](https://github.com/go-tangra/go-tangra-notification) | notifications and internal messages | `ghcr.io/go-tangra/go-tangra-notification` |
+| [go-tangra-inventory](https://github.com/go-tangra/go-tangra-inventory) | hardware/software inventory with endpoint agents; `sdk/` | `ghcr.io/go-tangra/go-tangra-inventory` |
+| [go-tangra-paperless](https://github.com/go-tangra/go-tangra-paperless) | document management | `ghcr.io/go-tangra/go-tangra-paperless` |
+| [go-tangra-deployer](https://github.com/go-tangra/go-tangra-deployer) | certificate deployment to infrastructure targets | `ghcr.io/go-tangra/go-tangra-deployer` |
+| [go-tangra-ipam](https://github.com/go-tangra/go-tangra-ipam) | IP address management and active network operations; `sdk/` | `ghcr.io/go-tangra/go-tangra-ipam` |
+| [go-tangra-asset](https://github.com/go-tangra/go-tangra-asset) | IT asset management | `ghcr.io/go-tangra/go-tangra-asset` |
+| [go-tangra-ticket](https://github.com/go-tangra/go-tangra-ticket) | email helpdesk | `ghcr.io/go-tangra/go-tangra-ticket` |
+| [go-tangra-dns](https://github.com/go-tangra/go-tangra-dns) | PowerDNS management plane | `ghcr.io/go-tangra/go-tangra-dns` |
+
+Services talk to each other only through the framework channel and the
+published `sdk/v4` modules (`github.com/go-tangra/go-tangra-<name>/sdk/v4`).
+
+## Versioning
+
+Everything in go-tangra v4 follows semantic versioning on the `v4` major line:
+
+- Go module `github.com/go-tangra/go-tangra/v4`, tags `vX.Y.Z` on this repo.
+- Contrib modules `github.com/go-tangra/go-tangra/contrib/<name>/v4` (tags
+  `contrib/<name>/vX.Y.Z`). In this repo they `replace` the root module with
+  `../..`; consumers ignore that and resolve the published tag.
+- `@go-tangra/ui` has the same version as the platform tag (`v4.0.0` publishes
+  `@go-tangra/ui@4.0.0`); CI publishes it to GitHub Packages on every `v*` tag.
+- Services are versioned independently (`go-tangra-<name>` tags `vX.Y.Z`, images
+  `ghcr.io/go-tangra/<repo>:X.Y.Z`); service sdks are tagged `sdk/vX.Y.Z`.
+
+## Consuming the platform from a service
+
+Go:
+
+```bash
+GOWORK=off go get github.com/go-tangra/go-tangra/v4@v4.0.0
+## Upstream overview: optional contrib modules
+GOWORK=off go get github.com/go-tangra/go-tangra/contrib/policy-valkey/v4@v4.0.0
+```
+
+Front-end (`@go-tangra/ui` is published to GitHub Packages, not npmjs.org):
+
+```bash
+printf '@go-tangra:registry=https://npm.pkg.github.com\n' > .npmrc   # commit this; no token in it
+npm install --no-audit --no-fund "--//npm.pkg.github.com/:_authToken=$(gh auth token)" @go-tangra/ui@^4.0.0
+```
+
+GitHub Packages needs a token even for public packages: locally a token with
+`read:packages` (e.g. `gh auth token`), in CI the workflow's `GITHUB_TOKEN`, which
+works once the `@go-tangra/ui` package grants the service repository read access
+("Manage Actions access" in the package settings). Docker builds receive it as a
+BuildKit secret (`--secret id=npm_token,env=NODE_AUTH_TOKEN`) so it never lands in
+an image layer.
+
+## Quickstart
+
+```bash
+make testca                                                     # dev CA + SVIDs in .dev/ca/
+go run ./examples/two-services/inventory --config examples/two-services/inventory.yaml &
+go run ./examples/two-services/orders    --config examples/two-services/orders.yaml
+```
+
+`orders` calls `inventory` over mTLS; `examples/two-services/policy.yaml` is the
+only thing that permits it. The full validation guide is
+[specs/001-secure-service-channel/quickstart.md](https://github.com/go-tangra/go-tangra/blob/2e9c08014dce3d7e0efd24699f4c6b532b71ee85/specs/001-secure-service-channel/quickstart.md).
+
+## Using it
+
+```go
+cfg, err := config.Load("service.yaml")           // typed, validated at startup
+app, err := freya.New(cfg)                         // refuses to start without identity + policy
+inventoryv1.RegisterInventoryServer(app.GRPC(), svc)
+go app.Run(ctx)
+
+conn, err := app.Client(ctx, "inventory")          // pooled mTLS connection, callee verified by SPIFFE ID
+peer, _ := authn.FromContext(ctx)                  // inside a handler: who is calling, verified
+```
+
+Options that weaken security (`WithInsecureLocalDev`, `WithAllowAllPolicy`) are
+named, log a warning, emit an `insecure_mode_enabled` audit event, and are
+refused when `env: production`.
+
+### Lists: server-side paging and sorting
+
+Every list endpoint behind a data table follows one contract
+(`specs/032-server-side-tables/contracts/http-list.md`): `page`, `page_size`
+(default 25, max 200), `sort` (an allow-listed field) and `order`, answered with
+`{items, total, page, page_size, sort, order}`; invalid values are a 422 naming
+the parameter. `listquery` implements it — the sort field reaches SQL only
+through the list's `Spec`:
+
+```go
+var hostList = listquery.Spec{
+    Fields:   map[string]listquery.Field{"hostname": {Expr: "h.hostname", Text: true}, "last_seen": {Expr: "h.last_seen", DefaultDir: listquery.Desc, NotNull: true}},
+    Default:  "hostname",
+    TieBreak: "h.id",
+}
+req, err := listquery.Parse(r.URL.Query(), hostList) // *listquery.Error → 422 {"param": …}
+// count(*) … → total; req = req.Clamp(total)
+// SELECT … ORDER BY req.OrderBy(hostList) LIMIT req.Limit() OFFSET req.Offset()
+writeJSON(w, listquery.NewPage(items, total, req))
+```
+
+In the UI, `UiDataTable` with a `total` prop is server-driven (it emits
+`update:page`, `update:pageSize`, `update:sort` and shows `UiPager`), and
+`useListQuery('<table>', {sortable, defaultSort})` keeps the table's page, size
+and sort in the URL.
+
+Mark a field `NotNull: true` when its column is `NOT NULL`: `OrderBy` then
+drops `NULLS LAST`, so a plain `(tenant_id, col, id)` index serves both
+directions (a backward scan yields `DESC NULLS FIRST`, which never matches
+`DESC NULLS LAST`).
+
+## Repository layout
+
+```
+freya.go            App builder (config → identity → policy → servers)
+config/             Typed configuration, YAML loader, secure defaults
+identity/           SPIFFE IDs, Provider interface, lifecycle; providers: spiffe/, file/, localdev/
+transport/          Runtime contract; tlsconf/ (TLS 1.3 mTLS builder), grpc/, http/, edge/
+authn/              Peer verification middleware, revocation checker
+authz/              Policy model, loader, matcher, cache, middleware; file/ source
+audit/              Event schema, redacting log handler, emitter
+observe/            Correlation IDs, tracing, metrics, request log, admin listener
+discovery/          Static name → endpoint map (any Kratos registry works too)
+listquery/          List contract: validated paging, allow-listed sorting, Page[T]
+freyatest/          Public test helpers for services (test CA, SVIDs, fixtures)
+cmd/freya-devca     Throw-away dev CA + SVIDs for the examples (`make testca`)
+contrib/            Optional modules: audit-timescale, policy-valkey (own go.mod each)
+examples/           two-services demo
+tests/              contract, integration, fuzz
+ui/kit              @go-tangra/ui: components, Zod forms, API client, theme, catalogue
+ui/scripts          front-end static checks and their self-tests
+deploy/stack        containerized dev stack running every service from ghcr.io images
+docs/               security model, configuration, dependencies, front-end architecture
+specs/              design history of the platform features (001, 013, 032)
+```
+
+## Development
+
+```bash
+make lint vuln test cover     # Go gates (root module)
+make fuzz                      # longer fuzzing of every parser
+make redaction-scan            # SC-008: no secret material in any output
+make bench                     # SC-006: mTLS overhead vs plaintext
+(cd contrib/policy-valkey && GOWORK=off go test ./...)   # each contrib module on its own
+npm ci && npm run build && npm run lint && npm test        # @go-tangra/ui kit
+```
+
+CI (`.github/workflows/ci.yaml`) runs `go vet` + `go test -race` for the root and
+every contrib module with `GOWORK=off`, and build + lint + vitest for the kit.
+Pushing a `v*` tag additionally publishes `@go-tangra/ui` (the tag must equal
+`ui/kit/package.json`'s version). No container image is built for the platform.
+
+## Running the whole platform
+
+`deploy/stack` brings up every service from its published image
+(`ghcr.io/go-tangra/<repo>:${TANGRA_VERSION:-4.0.0}`) plus the infrastructure,
+bootstrapped by lcm as the CA:
+
+```bash
+OPERATOR_EMAIL=you@example.org deploy/stack/up.sh
+```
+
+See [deploy/stack/README.md](sources/platform/deploy/stack/README.html), including how to build one
+service from a local checkout with `compose.override.yaml`.
+
+## Documentation
+
+- [docs/security-model.md](sources/platform/docs/security-model.html)
+- [docs/configuration.md](sources/platform/docs/configuration.html)
+- [docs/dependencies.md](sources/platform/docs/dependencies.html)
+- [docs/frontend.md](sources/platform/docs/frontend.html)
+- [SECURITY.md](https://github.com/go-tangra/go-tangra/blob/2e9c08014dce3d7e0efd24699f4c6b532b71ee85/SECURITY.md), [CHANGELOG.md](https://github.com/go-tangra/go-tangra/blob/2e9c08014dce3d7e0efd24699f4c6b532b71ee85/CHANGELOG.md)

@@ -1,0 +1,315 @@
+# Module enrollment into an existing core; no new Auth, Portal or LCM.
+name: tangra-ticket
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    environment:
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: postgres
+    volumes:
+    - ./init-db.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
+    - database-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+      - CMD
+      - pg_isready
+      - -U
+      - postgres
+      - -h
+      - 127.0.0.1
+      - -p
+      - '5432'
+      interval: 3s
+      timeout: 3s
+      retries: 60
+      start_period: 5s
+    restart: unless-stopped
+    depends_on: {}
+    networks:
+      default:
+        aliases:
+        - local-ticket-timescaledb
+  valkey:
+    image: valkey/valkey:8
+    command:
+    - valkey-server
+    - --requirepass
+    - dev
+    - --user
+    - gateway
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - auth
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - lcm
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - notification
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - warden
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - deployer
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - paperless
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - inventory
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - ipam
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - asset
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - ticket
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - dns
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - signing
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - hr
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --appendonly
+    - 'yes'
+    healthcheck:
+      test:
+      - CMD
+      - valkey-cli
+      - -a
+      - dev
+      - ping
+      interval: 3s
+      timeout: 3s
+      retries: 40
+    volumes:
+    - valkey-data:/data
+    restart: unless-stopped
+    depends_on: {}
+    networks:
+      default:
+        aliases:
+        - local-ticket-valkey
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    depends_on: {}
+    volumes: []
+    networks:
+      default:
+        aliases:
+        - local-ticket-mailpit
+  rustfs:
+    image: rustfs/rustfs:latest
+    environment:
+      RUSTFS_ACCESS_KEY: paperless
+      RUSTFS_SECRET_KEY: paperless-dev-secret
+      RUSTFS_VOLUMES: /data
+    volumes:
+    - rustfs-data:/data
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - -qO-
+      - http://127.0.0.1:9000/health
+      interval: 4s
+      timeout: 3s
+      retries: 40
+      start_period: 5s
+    restart: unless-stopped
+    depends_on: {}
+    networks:
+      default:
+        aliases:
+        - local-ticket-rustfs
+  edge-cert-init:
+    image: alpine:3.20
+    user: 0:0
+    entrypoint:
+    - sh
+    - -c
+    command:
+    - "set -e\nif [ -s /edge/tls.crt ] && [ -s /edge/tls.key ]; then echo \"edge certificate present, keeping it\"; exit 0; fi\napk add --no-cache openssl >/dev/null\nopenssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:P-256 -nodes \\\n  -keyout /edge/tls.key -out /edge/tls.crt -days 825 \\\n  -subj \"/CN=localhost/O=Freya dev stack\" \\\n  -addext \"subjectAltName=DNS:localhost,IP:127.0.0.1\" \\\n  -addext \"extendedKeyUsage=serverAuth\" \\\n  -addext \"keyUsage=digitalSignature\"\nchmod 0600 /edge/tls.key && chmod 0644 /edge/tls.crt\necho \"edge certificate generated\"\n"
+    volumes:
+    - edge-cert:/edge
+    restart: 'no'
+    depends_on: {}
+    networks:
+    - default
+  ticket-secrets-init:
+    image: alpine:3.20
+    user: 0:0
+    entrypoint:
+    - sh
+    - -c
+    command:
+    - 'set -e
+
+      if [ -s /secrets/relay.token ]; then echo "relay token present, keeping it"; exit 0; fi
+
+      umask 077
+
+      head -c 32 /dev/urandom | od -An -tx1 | tr -d '' \n'' > /secrets/relay.token
+
+      echo "relay token generated"
+
+      '
+    volumes:
+    - ticket-secrets:/secrets
+    restart: 'no'
+    depends_on: {}
+    networks:
+    - default
+  ticket:
+    image: ghcr.io/go-tangra/go-tangra-ticket:${TICKET_VERSION:-4.3.2}
+    user: 0:0
+    command:
+    - -config
+    - deploy/container.yaml
+    volumes:
+    - ${ENROLLMENT_TOKEN_FILE:-./private/enrollment.token}:/tokens/enrollment.token:ro
+    - ticket-state:/state
+    - ticket-secrets:/secrets:ro
+    - edge-cert:/edge:ro
+    - ./runtime/config.yaml:/app/deploy/container.yaml:ro
+    - ./runtime/policy.yaml:/policies/ticket.yaml:ro
+    - ticket-keys:/keys:ro
+    - ${MESH_CA_FILE:-./private/ca.pem}:/certs/ca.pem:ro
+    ports:
+    - 127.0.0.1:${TICKET_MAIL_PORT:-9957}:9957
+    - ${MODULE_BIND_IP:?Set the private module host bind IP}:9955:9955
+    - ${MODULE_BIND_IP:?Set the private module host bind IP}:9956:9956
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - -qO-
+      - http://127.0.0.1:9840/readyz
+      interval: 5s
+      timeout: 3s
+      retries: 60
+      start_period: 10s
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+      edge-cert-init:
+        condition: service_completed_successfully
+      ticket-secrets-init:
+        condition: service_completed_successfully
+      rustfs:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+      keys-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    networks:
+      default:
+        aliases:
+        - ticket
+    environment:
+      FREYA_ADVERTISE_HOST: ${MODULE_ADVERTISE_HOST:?Set a module host reachable from the core}
+  keys-init:
+    image: alpine:3.20
+    user: 0:0
+    entrypoint:
+    - sh
+    - /init-keys.sh
+    volumes:
+    - ./init-keys.sh:/init-keys.sh:ro
+    - ticket-keys:/keys/ticket
+    restart: 'no'
+    depends_on: {}
+    networks:
+    - default
+  check:
+    image: alpine:3.20
+    profiles:
+    - checks
+    network_mode: service:ticket
+    entrypoint:
+    - sh
+    - -ec
+    command:
+    - for i in $$(seq 1 60); do if wget -qO- http://127.0.0.1:9840/healthz && wget -qO- http://127.0.0.1:9840/readyz; then echo; echo "Health and readiness passed"; exit 0; fi; sleep 2; done; exit 1
+    depends_on:
+      ticket:
+        condition: service_started
+    restart: 'no'
+    volumes: []
+volumes:
+  database-data: {}
+  valkey-data: {}
+  rustfs-data: {}
+  edge-cert: {}
+  ticket-secrets: {}
+  ticket-state: {}
+  ticket-keys: {}
+networks:
+  default: {}

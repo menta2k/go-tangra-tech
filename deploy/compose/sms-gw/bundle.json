@@ -1,0 +1,34 @@
+{
+  "module": "sms-gw",
+  "service": "sms-gw",
+  "project": "tangra-sms-gw",
+  "admin_port": 9593,
+  "applications": [
+    "sms-gw"
+  ],
+  "services": [
+    "check",
+    "keys-init",
+    "sms-gw",
+    "sms-gw-bootstrap",
+    "timescaledb"
+  ],
+  "files": {
+    ".env.example": "4861ebf29a1e4d567d982cf721ccd7996fa7fc07fbaf4cba394b299455b89372",
+    ".env.same-host.example": "356edfba3e58a007ea823c5cc2355bdeb25f4f4b483577082b334a0006a204c0",
+    "README.md": "6845cb26bf6f6347150fa948c818c5f08d76174911d6fdf540000609b82949ed",
+    "compose.same-host.yaml": "28de53dfe365dc6901d7901dabadfac76f0563769bea9e5eb8003fb22001b176",
+    "compose.yaml": "45501f2d39d6b31e882465aec443662c1731f859013221d7f93004973416416b",
+    "configs/module.yaml": "4d74f60b5677e4c173ef0f6cd3242fb3dce86515a7a01750e625cdbe03865350",
+    "configure.py": "bfd8b151b4ec1888daa6a18518ccf779b3b11ef530bbb6037636333d4ff0a71c",
+    "init-db.sql": "7157c875b0f4f18c8eab1eb4bfc3b4527a8b74c63c4ae98fd6994373573a7f03",
+    "init-keys.sh": "35576b740f54fd1dd56c6f59699207c93c8e0115b5b05320c79464766d8acdb0",
+    "policies/module.yaml": "e669246d6b38365494e640badaeaf9a97977d0493278295a9926fee0c0e8527a"
+  },
+  "mode": "existing-core",
+  "topology": "remote-core",
+  "generated_files": [
+    "runtime/config.yaml",
+    "runtime/policy.yaml"
+  ]
+}

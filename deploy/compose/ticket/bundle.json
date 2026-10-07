@@ -1,0 +1,38 @@
+{
+  "module": "ticket",
+  "service": "ticket",
+  "project": "tangra-ticket",
+  "admin_port": 9840,
+  "applications": [
+    "ticket"
+  ],
+  "services": [
+    "check",
+    "edge-cert-init",
+    "keys-init",
+    "mailpit",
+    "rustfs",
+    "ticket",
+    "ticket-secrets-init",
+    "timescaledb",
+    "valkey"
+  ],
+  "files": {
+    ".env.example": "b88bf8d3ff939bd1bc9357b242a415681ef79eaf9f83ed57bd433d3bf2d9b9e3",
+    ".env.same-host.example": "44b15eb7e6bd64395c587b764e4ffd620a47ab3625318e32787cf849e01c71d6",
+    "README.md": "fb5b1ee905ce6c6360e091548aef6cfc11cd340f87d60aed441f27b9622735a9",
+    "compose.same-host.yaml": "7448f1703a2c4da11a4fb512d1ef775105bc796dbd23ce88c79a04665917b47a",
+    "compose.yaml": "0360a8d44a1d5679054b70695c507c9d1352c00ded0a2e80f5dd482abc1a4a27",
+    "configs/module.yaml": "cd8a0402cdbc5f0216ccc63dca77ce76ff138568c14e4daa43de95deadd8bea3",
+    "configure.py": "bfd8b151b4ec1888daa6a18518ccf779b3b11ef530bbb6037636333d4ff0a71c",
+    "init-db.sql": "3dd3be5337ca96f52bfe07de7a5c547894f9bccd98d9b8955621f1ff0afe6b34",
+    "init-keys.sh": "8d32833997f822c36a7ae066c05959f48a1affe06f71bf6b3f3918bdc37a57cb",
+    "policies/module.yaml": "b62419204493b3419252ed1ab609bbbb630789d28aed0a2942a98711634cdcf9"
+  },
+  "mode": "existing-core",
+  "topology": "remote-core",
+  "generated_files": [
+    "runtime/config.yaml",
+    "runtime/policy.yaml"
+  ]
+}

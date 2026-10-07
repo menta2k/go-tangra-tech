@@ -1,0 +1,33 @@
+{
+  "module": "scheduler",
+  "service": "scheduler",
+  "project": "tangra-scheduler",
+  "admin_port": 9800,
+  "applications": [
+    "scheduler"
+  ],
+  "services": [
+    "check",
+    "scheduler",
+    "scheduler-bootstrap",
+    "timescaledb",
+    "valkey"
+  ],
+  "files": {
+    ".env.example": "56f8fdacca47ce02b3b79c38a65d61ecb6a757f9456092ea52f4cae231e5c5db",
+    ".env.same-host.example": "a6b47fb9468a37de220336f137c5e8df1367d51d023b62f860bee7d6db75d298",
+    "README.md": "fdfc9b6fefeb696c80a72cf9c3a6d9a31d76151f949598aaddd6fe736a4d36be",
+    "compose.same-host.yaml": "4052aacb7b34919c2a83d7aead9370970352663a26e8b69365c3212d98fe3e40",
+    "compose.yaml": "01e7ceb94eb17e7d9190942ac760c5daea1ef375c208877ef946bab90241ead4",
+    "configs/module.yaml": "2918178d29c2d3a6a8e0352c3c5743730009e46094791f28c625b8293b2927d8",
+    "configure.py": "bfd8b151b4ec1888daa6a18518ccf779b3b11ef530bbb6037636333d4ff0a71c",
+    "init-db.sql": "c42217b9fbe23908ccd5406b81d30696e351616b32d18e5297eb5eea72245441",
+    "policies/module.yaml": "e17ffa58f09a25afad4454267a4eb1fe55d68f0e24f22ff0339cf7e3807761f5"
+  },
+  "mode": "existing-core",
+  "topology": "remote-core",
+  "generated_files": [
+    "runtime/config.yaml",
+    "runtime/policy.yaml"
+  ]
+}

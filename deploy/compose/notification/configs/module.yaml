@@ -1,0 +1,61 @@
+service_name: notification
+trust_domain: '@@TRUST_DOMAIN@@'
+env: '@@MESH_ENV@@'
+identity:
+  provider: provided
+enroll:
+  enabled: true
+  enroll_url: '@@LCM_ENROLL_URL@@'
+  lcm_grpc: '@@LCM_GRPC@@'
+  tenant_id: '@@TENANT_ID@@'
+  token_file: /tokens/enrollment.token
+  state_file: /state/svid.json
+  insecure: false
+  ca_file: /certs/ca.pem
+  server_spiffe_id: spiffe://@@TRUST_DOMAIN@@/svc/lcm
+authz:
+  source: file
+  path: /policies/notification.yaml
+server:
+  grpc_addr: 0.0.0.0:9943
+  http_addr: 0.0.0.0:9944
+admin:
+  addr: 127.0.0.1:9590
+discovery:
+  static:
+    gateway:
+    - '@@GATEWAY_GRPC@@'
+    auth:
+    - '@@AUTH_GRPC@@'
+    lcm:
+    - '@@LCM_GRPC@@'
+limits:
+  max_request_bytes: 16842752
+limits_notification:
+  backup_max_bytes: 16777216
+  send_per_tenant_per_minute: 600
+  send_per_sender_per_minute: 60
+  streams_per_user: 5
+  streams_per_tenant: 2000
+  replay_window_seconds: 300
+db:
+  dsn: postgres://notification_app:dev@local-notification-timescaledb:5432/notification?sslmode=disable
+  migrate_dsn: postgres://postgres:dev@local-notification-timescaledb:5432/notification?sslmode=disable
+valkey:
+  addresses:
+  - local-notification-valkey:6379
+  username: notification
+  password: dev
+  allow_plaintext: true
+kek:
+  source: file
+  path: /keys/kek
+smtp:
+  allow_plaintext: true
+  dial_timeout_seconds: 30
+scheduler:
+  interval_seconds: 15
+  lease_seconds: 60
+gateway:
+  service: gateway
+  issuer: '@@GATEWAY_ISSUER@@'

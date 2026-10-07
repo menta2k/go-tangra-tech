@@ -1,0 +1,61 @@
+service_name: warden
+trust_domain: '@@TRUST_DOMAIN@@'
+env: '@@MESH_ENV@@'
+identity:
+  provider: provided
+enroll:
+  enabled: true
+  enroll_url: '@@LCM_ENROLL_URL@@'
+  lcm_grpc: '@@LCM_GRPC@@'
+  tenant_id: '@@TENANT_ID@@'
+  token_file: /tokens/enrollment.token
+  state_file: /state/svid.json
+  insecure: false
+  ca_file: /certs/ca.pem
+  server_spiffe_id: spiffe://@@TRUST_DOMAIN@@/svc/lcm
+authz:
+  source: file
+  path: /policies/warden.yaml
+server:
+  grpc_addr: 0.0.0.0:9843
+  http_addr: 0.0.0.0:9844
+admin:
+  addr: 127.0.0.1:9490
+discovery:
+  static:
+    gateway:
+    - '@@GATEWAY_GRPC@@'
+    auth:
+    - '@@AUTH_GRPC@@'
+    lcm:
+    - '@@LCM_GRPC@@'
+limits:
+  max_request_bytes: 16842752
+limits_warden:
+  transfer_max_bytes: 16777216
+db:
+  dsn: postgres://warden_app:dev@local-warden-timescaledb:5432/warden?sslmode=disable
+  migrate_dsn: postgres://postgres:dev@local-warden-timescaledb:5432/warden?sslmode=disable
+valkey:
+  addresses:
+  - local-warden-valkey:6379
+  username: warden
+  password: dev
+  allow_plaintext: true
+vault:
+  address: http://local-warden-vault:8200
+  mount: warden
+  role_id_file: /vault-creds/role_id
+  secret_id_file: /vault-creds/secret_id
+  allow_plaintext: true
+gateway:
+  service: gateway
+  issuer: '@@GATEWAY_ISSUER@@'
+share:
+  public_origin: '@@GATEWAY_ISSUER@@'
+mail:
+  transport: smtp
+  host: mailpit
+  port: 1025
+  from: warden@example.org
+  allow_plaintext: true

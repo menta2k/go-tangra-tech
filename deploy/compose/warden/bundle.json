@@ -1,0 +1,39 @@
+{
+  "module": "warden",
+  "service": "warden",
+  "project": "tangra-warden",
+  "admin_port": 9490,
+  "applications": [
+    "warden"
+  ],
+  "services": [
+    "check",
+    "mailpit",
+    "timescaledb",
+    "valkey",
+    "vault",
+    "vault-init",
+    "warden"
+  ],
+  "files": {
+    ".env.example": "a91437bbc5552fabfd7a40121a1702106863de788a1dc0c106e06ee8a5cf0bc3",
+    ".env.same-host.example": "cc0ef40951a8391c2dc48f0136fb6726da0ceaf75b0228ca3d7581f3d88a8c9e",
+    "README.md": "102476e5d5be1865ed5badcaa4ea0f1933592c50ad21009caf1a67d1faf77738",
+    "compose.same-host.yaml": "2ce6694c9e0c233493026c52f5a6e3ad5a2e54ee3c508a2ab98609efcf1b8c3f",
+    "compose.yaml": "d1197f978470edb8cc76a0829a05051e8e7fe5b277f36ab09aff600e5f1ce964",
+    "configs/module.yaml": "220084dd236e8b9160bc20c760c5619655ad9470440f7ce56ca9407ddeb1b811",
+    "configure.py": "bfd8b151b4ec1888daa6a18518ccf779b3b11ef530bbb6037636333d4ff0a71c",
+    "init-db.sql": "9095797b6e36901039f423bce2069c9752ef499c05618897d9182d2c8d0bcee6",
+    "policies/module.yaml": "5062a6fa312409817629b87aacb143f60fd356eb973e545222599c57be62acc9",
+    "vault/approle.sh": "5a0d48c2e003339ee3a3127dc45d2b6393a39edc66b22255ab03c3163e8f97a4",
+    "vault/config.hcl": "4a0a660970a110d02c3cf939baaf08e196af205646dbb0ac3cc154718cf6e289",
+    "vault/init.sh": "85c3861bfc202ce3f781ad600036cead8f97b0dbc89d5a19657eb98e5432314f",
+    "vault/start.sh": "e4944bc7659bb8339f40d5568bbc64cb3fdb3d4992dbe55aebc5a99fa7af6409"
+  },
+  "mode": "existing-core",
+  "topology": "remote-core",
+  "generated_files": [
+    "runtime/config.yaml",
+    "runtime/policy.yaml"
+  ]
+}

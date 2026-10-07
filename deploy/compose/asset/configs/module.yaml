@@ -1,0 +1,82 @@
+service_name: asset
+trust_domain: '@@TRUST_DOMAIN@@'
+env: '@@MESH_ENV@@'
+identity:
+  provider: provided
+mesh_enroll:
+  enabled: true
+  enroll_url: '@@LCM_ENROLL_URL@@'
+  lcm_grpc: '@@LCM_GRPC@@'
+  tenant_id: '@@TENANT_ID@@'
+  token_file: /tokens/enrollment.token
+  state_file: /state/svid.json
+  insecure: false
+  ca_file: /certs/ca.pem
+  server_spiffe_id: spiffe://@@TRUST_DOMAIN@@/svc/lcm
+authz:
+  source: file
+  path: /policies/asset.yaml
+server:
+  grpc_addr: 0.0.0.0:9995
+  http_addr: 0.0.0.0:9996
+admin:
+  addr: 127.0.0.1:9830
+discovery:
+  static:
+    gateway:
+    - '@@GATEWAY_GRPC@@'
+    auth:
+    - '@@AUTH_GRPC@@'
+    lcm:
+    - '@@LCM_GRPC@@'
+    inventory:
+    - inventory:9975
+    paperless:
+    - paperless:9955
+    scheduler:
+    - scheduler:9905
+limits:
+  max_request_bytes: 33554432
+limits_asset:
+  max_request_bytes: 1048576
+  max_backup_bytes: 33554432
+db:
+  dsn: postgres://asset_app:dev@local-asset-timescaledb:5432/asset?sslmode=disable
+  migrate_dsn: postgres://postgres:dev@local-asset-timescaledb:5432/asset?sslmode=disable
+valkey:
+  addresses:
+  - local-asset-valkey:6379
+  username: asset
+  password: dev
+  allow_plaintext: true
+kek:
+  source: file
+  path: /keys/kek
+object_store:
+  endpoint: local-asset-rustfs:9000
+  bucket: asset
+  region: us-east-1
+  use_ssl: false
+  access_key: paperless
+  secret_key: paperless-dev-secret
+  presign_ttl_seconds: 900
+inventory:
+  service: inventory
+paperless:
+  enabled: true
+  service: paperless
+task_scheduler:
+  enabled: true
+  service: scheduler
+scheduler:
+  interval_seconds: 300
+  warranty_soon_days: 30
+  license_soon_days: 30
+  insurance_soon_days: 30
+uploads:
+  max_size_bytes: 20971520
+events:
+  enabled: true
+gateway:
+  service: gateway
+  issuer: '@@GATEWAY_ISSUER@@'

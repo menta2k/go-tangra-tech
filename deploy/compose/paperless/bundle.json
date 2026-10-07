@@ -1,0 +1,37 @@
+{
+  "module": "paperless",
+  "service": "paperless",
+  "project": "tangra-paperless",
+  "admin_port": 9790,
+  "applications": [
+    "paperless"
+  ],
+  "services": [
+    "check",
+    "gotenberg",
+    "keys-init",
+    "paperless",
+    "rustfs",
+    "tika",
+    "timescaledb",
+    "valkey"
+  ],
+  "files": {
+    ".env.example": "8a03511e7fc437419f847a82a98372db3ae2a129dfd5d7270fd3a8757d31efaf",
+    ".env.same-host.example": "192aeff8fd240d250b6e6a8705178b5ccbb4c4b9108cfc65cb4cee689ac38f89",
+    "README.md": "2d90456224a43efbf32a964e33113d612488d0decc50c329992593016183675d",
+    "compose.same-host.yaml": "07449a43264349f294eee8b4b49f04c89ed2ae7bb8eae2c8efd86307d52cf7e7",
+    "compose.yaml": "4fa004a0f400d858120a9eaee512b57a59ce691f16e63050f2ac4c29b0db2f4d",
+    "configs/module.yaml": "a61c6c71079232d4f47b1e3e98278feeb39701c0312b3f969de05ac8aa07e914",
+    "configure.py": "bfd8b151b4ec1888daa6a18518ccf779b3b11ef530bbb6037636333d4ff0a71c",
+    "init-db.sql": "39b665590abba39494beff17e65687b4fe3dee9e4700da070ffc8a2af147863c",
+    "init-keys.sh": "8d32833997f822c36a7ae066c05959f48a1affe06f71bf6b3f3918bdc37a57cb",
+    "policies/module.yaml": "ae0bd6d0e6cbba6b44ba569d448e3f9cc4c70a4b153efb98bb7434b4188e1f54"
+  },
+  "mode": "existing-core",
+  "topology": "remote-core",
+  "generated_files": [
+    "runtime/config.yaml",
+    "runtime/policy.yaml"
+  ]
+}

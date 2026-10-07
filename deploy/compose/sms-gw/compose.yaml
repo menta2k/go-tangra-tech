@@ -1,0 +1,127 @@
+# Module enrollment into an existing core; no new Auth, Portal or LCM.
+name: tangra-sms-gw
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    environment:
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: postgres
+    volumes:
+    - ./init-db.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
+    - database-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+      - CMD
+      - pg_isready
+      - -U
+      - postgres
+      - -h
+      - 127.0.0.1
+      - -p
+      - '5432'
+      interval: 3s
+      timeout: 3s
+      retries: 60
+      start_period: 5s
+    restart: unless-stopped
+    depends_on: {}
+    networks:
+      default:
+        aliases:
+        - local-sms-gw-timescaledb
+  sms-gw:
+    image: ghcr.io/go-tangra/go-tangra-sms-gw:${SMS_GW_VERSION:-4.0.0}
+    user: 0:0
+    command:
+    - -config
+    - deploy/container.yaml
+    restart: unless-stopped
+    volumes:
+    - ./runtime/config.yaml:deploy/container.yaml:ro
+    - ${ENROLLMENT_TOKEN_FILE:-./private/enrollment.token}:/tokens/enrollment.token:ro
+    - ${MESH_CA_FILE:-./private/ca.pem}:/certs/ca.pem:ro
+    - sms-gw-state:/state
+    - sms-gw-keys:/secrets:ro
+    - sms-gw-acme:/acme
+    - ./runtime/policy.yaml:/policies/sms-gw.yaml:ro
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      keys-init:
+        condition: service_completed_successfully
+      sms-gw-bootstrap:
+        condition: service_completed_successfully
+    read_only: true
+    tmpfs:
+    - /tmp:rw,noexec,nosuid,size=16m
+    ports:
+    - 127.0.0.1:${SMS_PORT:-9901}:9901
+    - ${MODULE_BIND_IP:?Set the private module host bind IP}:9983:9983
+    - ${MODULE_BIND_IP:?Set the private module host bind IP}:9984:9984
+    networks:
+      default:
+        aliases:
+        - sms-gw
+    environment:
+      FREYA_ADVERTISE_HOST: ${MODULE_ADVERTISE_HOST:?Set a module host reachable from the core}
+  keys-init:
+    image: alpine:3.20
+    user: 0:0
+    entrypoint:
+    - sh
+    - /init-keys.sh
+    volumes:
+    - ./init-keys.sh:/init-keys.sh:ro
+    - sms-gw-keys:/sms-secrets
+    restart: 'no'
+    depends_on: {}
+    networks:
+    - default
+  sms-gw-bootstrap:
+    image: ghcr.io/go-tangra/go-tangra-sms-gw:${SMS_GW_VERSION:-4.0.0}
+    user: 0:0
+    command:
+    - bootstrap
+    - -config
+    - deploy/container.yaml
+    restart: 'no'
+    volumes:
+    - ./runtime/config.yaml:deploy/container.yaml:ro
+    - ${ENROLLMENT_TOKEN_FILE:-./private/enrollment.token}:/tokens/enrollment.token:ro
+    - ${MESH_CA_FILE:-./private/ca.pem}:/certs/ca.pem:ro
+    - sms-gw-state:/state
+    - sms-gw-keys:/secrets:ro
+    - sms-gw-acme:/acme
+    - ./runtime/policy.yaml:/policies/sms-gw.yaml:ro
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      keys-init:
+        condition: service_completed_successfully
+    read_only: true
+    tmpfs:
+    - /tmp:rw,noexec,nosuid,size=16m
+    networks:
+    - default
+  check:
+    image: alpine:3.20
+    profiles:
+    - checks
+    network_mode: service:sms-gw
+    entrypoint:
+    - sh
+    - -ec
+    command:
+    - for i in $$(seq 1 60); do if wget -qO- http://127.0.0.1:9593/healthz && wget -qO- http://127.0.0.1:9593/readyz; then echo; echo "Health and readiness passed"; exit 0; fi; sleep 2; done; exit 1
+    depends_on:
+      sms-gw:
+        condition: service_started
+    restart: 'no'
+    volumes: []
+volumes:
+  database-data: {}
+  sms-gw-state: {}
+  sms-gw-keys: {}
+  sms-gw-acme: {}
+networks:
+  default: {}

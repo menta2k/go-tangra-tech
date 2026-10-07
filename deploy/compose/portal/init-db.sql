@@ -1,0 +1,26 @@
+-- Local workstation credentials. One owned DB and non-bypass app role per service.
+CREATE DATABASE openfga;
+CREATE DATABASE auth;
+\c auth
+CREATE EXTENSION IF NOT EXISTS timescaledb;
+CREATE EXTENSION IF NOT EXISTS citext;
+CREATE EXTENSION IF NOT EXISTS btree_gist;
+CREATE ROLE auth_app LOGIN PASSWORD 'dev' NOBYPASSRLS;
+GRANT CONNECT ON DATABASE auth TO auth_app;
+\c postgres
+CREATE DATABASE gateway;
+\c gateway
+CREATE EXTENSION IF NOT EXISTS timescaledb;
+CREATE EXTENSION IF NOT EXISTS citext;
+CREATE EXTENSION IF NOT EXISTS btree_gist;
+CREATE ROLE gateway_app LOGIN PASSWORD 'dev' NOBYPASSRLS;
+GRANT CONNECT ON DATABASE gateway TO gateway_app;
+\c postgres
+CREATE DATABASE lcm;
+\c lcm
+CREATE EXTENSION IF NOT EXISTS timescaledb;
+CREATE EXTENSION IF NOT EXISTS citext;
+CREATE EXTENSION IF NOT EXISTS btree_gist;
+CREATE ROLE lcm_app LOGIN PASSWORD 'dev' NOBYPASSRLS;
+GRANT CONNECT ON DATABASE lcm TO lcm_app;
+\c postgres

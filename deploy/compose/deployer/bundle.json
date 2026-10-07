@@ -1,0 +1,34 @@
+{
+  "module": "deployer",
+  "service": "deployer",
+  "project": "tangra-deployer",
+  "admin_port": 9690,
+  "applications": [
+    "deployer"
+  ],
+  "services": [
+    "check",
+    "deployer",
+    "keys-init",
+    "timescaledb",
+    "valkey"
+  ],
+  "files": {
+    ".env.example": "5b8ac40704fc8deec4db80cb703e0cbfb3f192d7966988fedee8a9a3038fecd3",
+    ".env.same-host.example": "54b283d476b80538790277e72cdee5942cd58b6b151115ae8de2cb260702be86",
+    "README.md": "70b81e075235e67649886e28a1c27a4ca3f7c4b7a63482cbea4b5881fe3cf57b",
+    "compose.same-host.yaml": "45ae8daadd1112b8c5fd213738c7e21bc7c188a6b0b0ef5c5031c7785853ff71",
+    "compose.yaml": "5f10d749caa1a1f670f5020df07ead1a5b3c371f545b40ea64289dc91daff368",
+    "configs/module.yaml": "1d57d126d78ad2c66b21cb55e8eb20edfe5115dfdf8921486a02b14a0efcd5db",
+    "configure.py": "bfd8b151b4ec1888daa6a18518ccf779b3b11ef530bbb6037636333d4ff0a71c",
+    "init-db.sql": "35513d7017da4e9f71d7f4170e59503fc45b08675bd25755aa3700039d07a2a1",
+    "init-keys.sh": "8d32833997f822c36a7ae066c05959f48a1affe06f71bf6b3f3918bdc37a57cb",
+    "policies/module.yaml": "1d807c54634ff9bffc87f389f630610befbceee3c2643ed2db1d8fa6c0cfb845"
+  },
+  "mode": "existing-core",
+  "topology": "remote-core",
+  "generated_files": [
+    "runtime/config.yaml",
+    "runtime/policy.yaml"
+  ]
+}

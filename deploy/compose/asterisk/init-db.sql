@@ -1,0 +1,1 @@
+-- Local workstation credentials. One owned DB and non-bypass app role per service.

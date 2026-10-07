@@ -1,0 +1,34 @@
+{
+  "module": "asterisk",
+  "service": "asterisk",
+  "project": "tangra-asterisk",
+  "admin_port": 9094,
+  "applications": [
+    "asterisk"
+  ],
+  "services": [
+    "asterisk",
+    "asterisk-bootstrap",
+    "check",
+    "registration-db",
+    "timescaledb"
+  ],
+  "files": {
+    ".env.example": "75fa859bb3118427d54743889c65405a06003e56d3cf588f63724d30ad6e4c7f",
+    ".env.same-host.example": "ca773dda90d4e071a5e09420d42ed54901bc32924f3899cb2c52cc6c4d3fc1ee",
+    "README.md": "84f7a18b07c0660db545dc2250c2ea2c1530fb21b172c534af1ec85722d3d203",
+    "compose.same-host.yaml": "b24aa57575f05f5dea730ad98da801187500e05e37521332319baa09e7ef6b6a",
+    "compose.yaml": "b9bd8aaf596e201e627ac01fcb3598a5dd11e3e94f7b6bdbed432f177baf1c7a",
+    "configs/module.yaml": "c4a2c043cc0ab26099717efb6e88029c30ed5517fb420e96a5172dfa20a2852b",
+    "configure.py": "bfd8b151b4ec1888daa6a18518ccf779b3b11ef530bbb6037636333d4ff0a71c",
+    "init-db.sql": "ac0d8b1c4d8d7637204d121bc35abe852d049fa303dc43f6ec759502ef0ac9c0",
+    "policies/module.yaml": "7caa61b36a1b1e9d03e06ea5c9efd578cfb41800b907c52efaeeb005c321feea",
+    "registration.sql": "cd2c3ae653fbf80736c3ea87091f595509a8b945b27030b07fdcfb49bc5e2f51"
+  },
+  "mode": "existing-core",
+  "topology": "remote-core",
+  "generated_files": [
+    "runtime/config.yaml",
+    "runtime/policy.yaml"
+  ]
+}

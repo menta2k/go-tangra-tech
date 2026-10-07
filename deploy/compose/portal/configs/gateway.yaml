@@ -1,0 +1,69 @@
+service_name: gateway
+trust_domain: example.org
+env: dev
+identity:
+  provider: provided
+enroll:
+  enabled: true
+  enroll_url: https://lcm:9947/api/lcm/v1/enroll
+  lcm_grpc: lcm:9945
+  tenant_id: 00000000-0000-0000-0000-000000000001
+  token_file: /tokens/gateway.token
+  state_file: /state/svid.json
+  insecure: false
+  ca_file: /certs/ca.pem
+  server_spiffe_id: spiffe://example.org/svc/lcm
+authz:
+  source: file
+  path: /policies/gateway.yaml
+server:
+  grpc_addr: 0.0.0.0:9643
+admin:
+  addr: 127.0.0.1:9290
+discovery:
+  static:
+    auth:
+    - auth:9543
+edge:
+  addr: 0.0.0.0:8443
+  cert_file: /edge/tls.crt
+  key_file: /edge/tls.key
+  allowed_origins:
+  - https://localhost:8443
+  - https://127.0.0.1:8443
+  rate_limit:
+    per_second: 200
+    burst: 400
+public_origin: https://localhost:8443
+console:
+  enabled: false
+  addr: 0.0.0.0:8444
+  public_origin: https://localhost:8444
+  routes:
+    /bmc/: ipam
+db:
+  dsn: postgres://gateway_app:dev@timescaledb:5432/gateway?sslmode=disable
+  migrate_dsn: postgres://postgres:dev@timescaledb:5432/gateway?sslmode=disable
+valkey:
+  addresses:
+  - valkey:6379
+  username: gateway
+  password: dev
+  allow_plaintext: true
+auth:
+  service: auth
+  issuer: https://localhost:8443
+  audience: gateway
+leases:
+  ttl: 30s
+  renew: 10s
+forward:
+  body_bytes: 1048576
+  streams_per_client: 32
+  stream_max: 10m
+  module_timeout: 30s
+operators:
+  roles:
+  - operator
+limits:
+  max_request_bytes: 16842752

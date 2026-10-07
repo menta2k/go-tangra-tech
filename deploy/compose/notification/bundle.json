@@ -1,0 +1,34 @@
+{
+  "module": "notification",
+  "service": "notification",
+  "project": "tangra-notification",
+  "admin_port": 9590,
+  "applications": [
+    "notification"
+  ],
+  "services": [
+    "check",
+    "keys-init",
+    "notification",
+    "timescaledb",
+    "valkey"
+  ],
+  "files": {
+    ".env.example": "760953ac614909a78b641c17af919d8e03218c022736c2b54cc35cf181be540e",
+    ".env.same-host.example": "9d28525ce79003ecd0b5c4bc159b14812a42a523f0c167dd2f4332e78f386572",
+    "README.md": "2cc6996e167789f3cddbdb649570cff5b10dd40bedcce46b7b87924eab69fdb7",
+    "compose.same-host.yaml": "3495a302de6f60d8038326ca55b79e02f9b7defeaec05ae2ec48423287c00bbe",
+    "compose.yaml": "0951d654d792f9a74e123601f045ac7bd3e13e04d60fb3a2008840edfb5643d1",
+    "configs/module.yaml": "8f30334cb8ce7951466866e528394b25720ac7cb154b2be44dbf6abe08107cb8",
+    "configure.py": "bfd8b151b4ec1888daa6a18518ccf779b3b11ef530bbb6037636333d4ff0a71c",
+    "init-db.sql": "c53a7ea682874d2ae7d12b221a04eebfdf210104567d6fe84428fb027f6c9744",
+    "init-keys.sh": "8d32833997f822c36a7ae066c05959f48a1affe06f71bf6b3f3918bdc37a57cb",
+    "policies/module.yaml": "03ecb18cfa73d30923cd626bb29400c3e4b2e430c44224676e29f752c92186c2"
+  },
+  "mode": "existing-core",
+  "topology": "remote-core",
+  "generated_files": [
+    "runtime/config.yaml",
+    "runtime/policy.yaml"
+  ]
+}

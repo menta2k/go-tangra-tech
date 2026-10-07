@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    outputs:
+      modules: ${{ steps.modules.outputs.modules }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Build and validate
+        run: make test
+      - name: Discover and verify all module bundles
+        id: modules
+        shell: python
+        run: |
+          import json
+          import os
+          from pathlib import Path
+
+          modules = sorted(path.parent.name for path in Path('deploy/compose').glob('*/bundle.json'))
+          if not modules:
+              raise SystemExit('No module bundles found')
+          expected = {f'{module}.zip' for module in modules}
+          actual = {path.name for path in Path('dist/downloads').glob('*.zip')}
+          if actual != expected:
+              raise SystemExit(f'Bundle mismatch: missing={expected - actual}, unexpected={actual - expected}')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write(f'modules={json.dumps(modules)}\n')
+      - name: Upload complete documentation site
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation-site
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload bundles for artifact jobs
+        uses: actions/upload-artifact@v4
+        with:
+          name: all-module-bundles
+          path: dist/downloads/*.zip
+          if-no-files-found: error
+          retention-days: 30
+
+  module-artifacts:
+    needs: validate
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        module: ${{ fromJSON(needs.validate.outputs.modules) }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: all-module-bundles
+          path: bundles
+      - name: Upload module bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: compose-${{ matrix.module }}
+          path: bundles/${{ matrix.module }}.zip
+          if-no-files-found: error
+          retention-days: 30

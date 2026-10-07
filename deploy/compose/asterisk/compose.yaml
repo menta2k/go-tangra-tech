@@ -1,0 +1,139 @@
+# Module enrollment into an existing core; no new Auth, Portal or LCM.
+name: tangra-asterisk
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    environment:
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: postgres
+    volumes:
+    - ./init-db.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
+    - database-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+      - CMD
+      - pg_isready
+      - -U
+      - postgres
+      - -h
+      - 127.0.0.1
+      - -p
+      - '5432'
+      interval: 3s
+      timeout: 3s
+      retries: 60
+      start_period: 5s
+    restart: unless-stopped
+    depends_on: {}
+    networks:
+      default:
+        aliases:
+        - local-asterisk-timescaledb
+  asterisk:
+    image: ghcr.io/go-tangra/go-tangra-asterisk:${ASTERISK_VERSION:-4.0.0}
+    user: 0:0
+    command:
+    - -config
+    - /etc/asterisk-module/config.yaml
+    restart: unless-stopped
+    volumes:
+    - ./runtime/config.yaml:/etc/asterisk-module/config.yaml:ro
+    - ${ENROLLMENT_TOKEN_FILE:-./private/enrollment.token}:/tokens/enrollment.token:ro
+    - ${MESH_CA_FILE:-./private/ca.pem}:/certs/ca.pem:ro
+    - asterisk-state:/state
+    - ./runtime/policy.yaml:/policies/asterisk.yaml:ro
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      registration-db:
+        condition: service_healthy
+      asterisk-bootstrap:
+        condition: service_completed_successfully
+    read_only: true
+    tmpfs:
+    - /tmp:rw,noexec,nosuid,size=16m
+    environment:
+      ASTERISK_CDR_DSN: ${ASTERISK_CDR_DSN:?Set a read-only PBX CDR DSN in .env}
+      FREYA_ADVERTISE_HOST: ${MODULE_ADVERTISE_HOST:?Set a module host reachable from the core}
+    extra_hosts:
+    - host.docker.internal:host-gateway
+    networks:
+      default:
+        aliases:
+        - asterisk
+    ports:
+    - ${MODULE_BIND_IP:?Set the private module host bind IP}:9982:9982
+    - ${MODULE_BIND_IP:?Set the private module host bind IP}:9981:9981
+  registration-db:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: registration-dev-only
+    volumes:
+    - registration-data:/var/lib/mysql
+    - ./registration.sql:/docker-entrypoint-initdb.d/10-registration.sql:ro
+    healthcheck:
+      test:
+      - CMD
+      - mysqladmin
+      - ping
+      - -h
+      - 127.0.0.1
+      - -pregistration-dev-only
+      interval: 3s
+      timeout: 3s
+      retries: 60
+    restart: unless-stopped
+    depends_on: {}
+    networks:
+      default:
+        aliases:
+        - local-asterisk-registration-db
+  asterisk-bootstrap:
+    image: ghcr.io/go-tangra/go-tangra-asterisk:${ASTERISK_VERSION:-4.0.0}
+    user: 0:0
+    command:
+    - bootstrap
+    - -config
+    - /etc/asterisk-module/config.yaml
+    restart: 'no'
+    volumes:
+    - ./runtime/config.yaml:/etc/asterisk-module/config.yaml:ro
+    - ${ENROLLMENT_TOKEN_FILE:-./private/enrollment.token}:/tokens/enrollment.token:ro
+    - ${MESH_CA_FILE:-./private/ca.pem}:/certs/ca.pem:ro
+    - asterisk-state:/state
+    - ./runtime/policy.yaml:/policies/asterisk.yaml:ro
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      registration-db:
+        condition: service_healthy
+    read_only: true
+    tmpfs:
+    - /tmp:rw,noexec,nosuid,size=16m
+    environment:
+      ASTERISK_CDR_DSN: ${ASTERISK_CDR_DSN:?Set a read-only PBX CDR DSN in .env}
+    extra_hosts:
+    - host.docker.internal:host-gateway
+    networks:
+    - default
+  check:
+    image: alpine:3.20
+    profiles:
+    - checks
+    network_mode: service:asterisk
+    entrypoint:
+    - sh
+    - -ec
+    command:
+    - for i in $$(seq 1 60); do if wget -qO- http://127.0.0.1:9094/healthz && wget -qO- http://127.0.0.1:9094/readyz; then echo; echo "Health and readiness passed"; exit 0; fi; sleep 2; done; exit 1
+    depends_on:
+      asterisk:
+        condition: service_started
+    restart: 'no'
+    volumes: []
+volumes:
+  database-data: {}
+  asterisk-state: {}
+  registration-data: {}
+networks:
+  default: {}

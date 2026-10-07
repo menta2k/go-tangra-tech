@@ -1,0 +1,325 @@
+# Module enrollment into an existing core; no new Auth, Portal or LCM.
+name: tangra-dns
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    environment:
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: postgres
+    volumes:
+    - ./init-db.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
+    - database-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+      - CMD
+      - pg_isready
+      - -U
+      - postgres
+      - -h
+      - 127.0.0.1
+      - -p
+      - '5432'
+      interval: 3s
+      timeout: 3s
+      retries: 60
+      start_period: 5s
+    restart: unless-stopped
+    depends_on: {}
+    networks:
+      default:
+        aliases:
+        - local-dns-timescaledb
+  valkey:
+    image: valkey/valkey:8
+    command:
+    - valkey-server
+    - --requirepass
+    - dev
+    - --user
+    - gateway
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - auth
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - lcm
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - notification
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - warden
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - deployer
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - paperless
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - inventory
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - ipam
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - asset
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - ticket
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - dns
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - signing
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - hr
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --appendonly
+    - 'yes'
+    - --user
+    - scheduler
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    healthcheck:
+      test:
+      - CMD
+      - valkey-cli
+      - -a
+      - dev
+      - ping
+      interval: 3s
+      timeout: 3s
+      retries: 40
+    volumes:
+    - valkey-data:/data
+    restart: unless-stopped
+    depends_on: {}
+    networks:
+      default:
+        aliases:
+        - local-dns-valkey
+  dns-secrets-init:
+    image: alpine:3.20
+    user: 0:0
+    entrypoint:
+    - sh
+    - -c
+    command:
+    - "set -e\numask 077\nfor k in pdns-auth pdns-recursor; do\n  if [ -s /secrets/$$k.key ]; then echo \"$$k key present, keeping it\"; else\n    head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \\n' > /secrets/$$k.key; echo \"$$k key generated\"; fi\ndone\nAUTH=$$(cat /secrets/pdns-auth.key); REC=$$(cat /secrets/pdns-recursor.key)\nprintf '%s\\n' '# Written by dns-secrets-init (dev stack). API on the internal network only.' \\\n  'webserver=yes' 'api=yes' \"api-key=$$AUTH\" 'webserver-address=0.0.0.0' 'webserver-port=8081' \\\n  'webserver-allow-from=127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16' > /auth-conf/00-api.conf\nprintf '%s\\n' '# Written by dns-secrets-init (dev stack). API on the internal network only.' \\\n  'webservice:' '  webserver: true' '  address: 0.0.0.0' '  port: 8082' \"  api_key: \\\"$$REC\\\"\" \\\n  '  api_dir: /var/lib/pdns-recursor-api' \\\n  '  allow_from: [\"127.0.0.0/8\", \"10.0.0.0/8\", \"172.16.0.0/12\", \"192.168.0.0/16\"]' > /recursor-conf/00-api.yml\n\
+      mkdir -p /recursor-api\nchown 953:953 /auth-conf/00-api.conf /recursor-conf/00-api.yml /recursor-api /auth-conf /recursor-conf\nchmod 0600 /auth-conf/00-api.conf /recursor-conf/00-api.yml\nchmod 0755 /auth-conf /recursor-conf\necho \"PowerDNS API snippets written\"\n"
+    volumes:
+    - dns-secrets:/secrets
+    - pdns-auth-conf:/auth-conf
+    - pdns-recursor-conf:/recursor-conf
+    - pdns-recursor-api:/recursor-api
+    restart: 'no'
+    depends_on: {}
+    networks:
+    - default
+  pdns-auth:
+    image: powerdns/pdns-auth-49@sha256:b554df74bbde1afa7caedad4af9c91378be6d46d05807d089b3c7c443002e684
+    volumes:
+    - pdns-auth-data:/var/lib/powerdns
+    - pdns-auth-conf:/etc/powerdns/pdns.d
+    - ./pdns/pdns.conf:/etc/powerdns/pdns.conf:ro
+    ports:
+    - 127.0.0.1:5300:53/udp
+    - 127.0.0.1:5300:53/tcp
+    healthcheck:
+      test:
+      - CMD
+      - pdns_control
+      - rping
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+    restart: unless-stopped
+    depends_on:
+      dns-secrets-init:
+        condition: service_completed_successfully
+    networks:
+      default:
+        aliases:
+        - local-dns-pdns-auth
+  pdns-recursor:
+    image: powerdns/pdns-recursor-53@sha256:175d551ce52fa5c6bf0a0c19d6872791a4c928f6fb00a696534c1174693da3f7
+    volumes:
+    - pdns-recursor-conf:/etc/powerdns/recursor.d
+    - pdns-recursor-api:/var/lib/pdns-recursor-api
+    - ./pdns/recursor.yml:/etc/powerdns/recursor.conf:ro
+    ports:
+    - 127.0.0.1:5301:53/udp
+    - 127.0.0.1:5301:53/tcp
+    healthcheck:
+      test:
+      - CMD
+      - rec_control
+      - ping
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+    restart: unless-stopped
+    depends_on:
+      dns-secrets-init:
+        condition: service_completed_successfully
+      pdns-auth:
+        condition: service_healthy
+    networks:
+      default:
+        aliases:
+        - local-dns-pdns-recursor
+  dns:
+    image: ghcr.io/go-tangra/go-tangra-dns:${DNS_VERSION:-4.3.2}
+    user: 0:0
+    group_add:
+    - ${DOCKER_GID:-999}
+    command:
+    - -config
+    - deploy/container.yaml
+    volumes:
+    - ${ENROLLMENT_TOKEN_FILE:-./private/enrollment.token}:/tokens/enrollment.token:ro
+    - dns-state:/state
+    - dns-secrets:/secrets:ro
+    - pdns-auth-conf:/pdns-auth-conf
+    - pdns-recursor-conf:/pdns-recursor-conf
+    - ./runtime/config.yaml:/app/deploy/container.yaml:ro
+    - ./runtime/policy.yaml:/policies/dns.yaml:ro
+    - dns-keys:/keys:ro
+    - ${MESH_CA_FILE:-./private/ca.pem}:/certs/ca.pem:ro
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - -qO-
+      - http://127.0.0.1:9850/readyz
+      interval: 5s
+      timeout: 3s
+      retries: 60
+      start_period: 10s
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+      dns-secrets-init:
+        condition: service_completed_successfully
+      pdns-auth:
+        condition: service_healthy
+      pdns-recursor:
+        condition: service_healthy
+      keys-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    networks:
+      default:
+        aliases:
+        - dns
+    environment:
+      FREYA_ADVERTISE_HOST: ${MODULE_ADVERTISE_HOST:?Set a module host reachable from the core}
+    ports:
+    - ${MODULE_BIND_IP:?Set the private module host bind IP}:9965:9965
+    - ${MODULE_BIND_IP:?Set the private module host bind IP}:9966:9966
+  keys-init:
+    image: alpine:3.20
+    user: 0:0
+    entrypoint:
+    - sh
+    - /init-keys.sh
+    volumes:
+    - ./init-keys.sh:/init-keys.sh:ro
+    - dns-keys:/keys/dns
+    restart: 'no'
+    depends_on: {}
+    networks:
+    - default
+  check:
+    image: alpine:3.20
+    profiles:
+    - checks
+    network_mode: service:dns
+    entrypoint:
+    - sh
+    - -ec
+    command:
+    - for i in $$(seq 1 60); do if wget -qO- http://127.0.0.1:9850/healthz && wget -qO- http://127.0.0.1:9850/readyz; then echo; echo "Health and readiness passed"; exit 0; fi; sleep 2; done; exit 1
+    depends_on:
+      dns:
+        condition: service_started
+    restart: 'no'
+    volumes: []
+volumes:
+  database-data: {}
+  valkey-data: {}
+  dns-secrets: {}
+  pdns-auth-conf: {}
+  pdns-recursor-conf: {}
+  pdns-recursor-api: {}
+  pdns-auth-data: {}
+  dns-state: {}
+  dns-keys: {}
+networks:
+  default: {}

@@ -1,0 +1,302 @@
+# Module enrollment into an existing core; no new Auth, Portal or LCM.
+name: tangra-paperless
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    environment:
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: postgres
+    volumes:
+    - ./init-db.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
+    - database-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+      - CMD
+      - pg_isready
+      - -U
+      - postgres
+      - -h
+      - 127.0.0.1
+      - -p
+      - '5432'
+      interval: 3s
+      timeout: 3s
+      retries: 60
+      start_period: 5s
+    restart: unless-stopped
+    depends_on: {}
+    networks:
+      default:
+        aliases:
+        - local-paperless-timescaledb
+  valkey:
+    image: valkey/valkey:8
+    command:
+    - valkey-server
+    - --requirepass
+    - dev
+    - --user
+    - gateway
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - auth
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - lcm
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - notification
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - warden
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - deployer
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - paperless
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - inventory
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - ipam
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - asset
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - ticket
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - dns
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - signing
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --user
+    - hr
+    - 'on'
+    - '>dev'
+    - ~*
+    - '&*'
+    - +@all
+    - --appendonly
+    - 'yes'
+    healthcheck:
+      test:
+      - CMD
+      - valkey-cli
+      - -a
+      - dev
+      - ping
+      interval: 3s
+      timeout: 3s
+      retries: 40
+    volumes:
+    - valkey-data:/data
+    restart: unless-stopped
+    depends_on: {}
+    networks:
+      default:
+        aliases:
+        - local-paperless-valkey
+  rustfs:
+    image: rustfs/rustfs:latest
+    environment:
+      RUSTFS_ACCESS_KEY: paperless
+      RUSTFS_SECRET_KEY: paperless-dev-secret
+      RUSTFS_VOLUMES: /data
+    volumes:
+    - rustfs-data:/data
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - -qO-
+      - http://127.0.0.1:9000/health
+      interval: 4s
+      timeout: 3s
+      retries: 40
+      start_period: 5s
+    restart: unless-stopped
+    depends_on: {}
+    networks:
+      default:
+        aliases:
+        - local-paperless-rustfs
+  tika:
+    image: apache/tika:latest-full
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - -qO-
+      - http://127.0.0.1:9998/tika
+      interval: 5s
+      timeout: 3s
+      retries: 40
+      start_period: 10s
+    restart: unless-stopped
+    depends_on: {}
+    volumes: []
+    networks:
+      default:
+        aliases:
+        - local-paperless-tika
+  gotenberg:
+    image: gotenberg/gotenberg:8
+    command:
+    - gotenberg
+    - --api-port=3000
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -sf
+      - http://127.0.0.1:3000/health
+      interval: 5s
+      timeout: 3s
+      retries: 40
+      start_period: 10s
+    restart: unless-stopped
+    depends_on: {}
+    volumes: []
+    networks:
+      default:
+        aliases:
+        - local-paperless-gotenberg
+  paperless:
+    image: ghcr.io/go-tangra/go-tangra-paperless:${PAPERLESS_VERSION:-4.4.3}
+    user: 0:0
+    command:
+    - -config
+    - deploy/container.yaml
+    volumes:
+    - ${ENROLLMENT_TOKEN_FILE:-./private/enrollment.token}:/tokens/enrollment.token:ro
+    - paperless-state:/state
+    - ./runtime/config.yaml:/app/deploy/container.yaml:ro
+    - ./runtime/policy.yaml:/policies/paperless.yaml:ro
+    - paperless-keys:/keys:ro
+    - ${MESH_CA_FILE:-./private/ca.pem}:/certs/ca.pem:ro
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - -qO-
+      - http://127.0.0.1:9790/readyz
+      interval: 5s
+      timeout: 3s
+      retries: 60
+      start_period: 10s
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+      rustfs:
+        condition: service_healthy
+      tika:
+        condition: service_healthy
+      gotenberg:
+        condition: service_healthy
+      keys-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    networks:
+      default:
+        aliases:
+        - paperless
+    environment:
+      FREYA_ADVERTISE_HOST: ${MODULE_ADVERTISE_HOST:?Set a module host reachable from the core}
+    ports:
+    - ${MODULE_BIND_IP:?Set the private module host bind IP}:9955:9955
+    - ${MODULE_BIND_IP:?Set the private module host bind IP}:9956:9956
+  keys-init:
+    image: alpine:3.20
+    user: 0:0
+    entrypoint:
+    - sh
+    - /init-keys.sh
+    volumes:
+    - ./init-keys.sh:/init-keys.sh:ro
+    - paperless-keys:/keys/paperless
+    restart: 'no'
+    depends_on: {}
+    networks:
+    - default
+  check:
+    image: alpine:3.20
+    profiles:
+    - checks
+    network_mode: service:paperless
+    entrypoint:
+    - sh
+    - -ec
+    command:
+    - for i in $$(seq 1 60); do if wget -qO- http://127.0.0.1:9790/healthz && wget -qO- http://127.0.0.1:9790/readyz; then echo; echo "Health and readiness passed"; exit 0; fi; sleep 2; done; exit 1
+    depends_on:
+      paperless:
+        condition: service_started
+    restart: 'no'
+    volumes: []
+volumes:
+  database-data: {}
+  valkey-data: {}
+  rustfs-data: {}
+  paperless-state: {}
+  paperless-keys: {}
+networks:
+  default: {}

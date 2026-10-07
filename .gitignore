@@ -1,0 +1,21 @@
+dist/
+.venv/
+__pycache__/
+*.pyc
+*.log
+.env*
+!.env.example
+!.env.same-host.example
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.idea/
+.vscode/
+
+# Private enrollment inputs and rendered module configuration
+deploy/compose/*/private/
+deploy/compose/*/runtime/
+
+# Alternate Git metadata for environments with a read-only .git directory
+.repo-git/

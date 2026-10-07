@@ -1,0 +1,35 @@
+# Freya service-to-service policy for warden: the gateway forwards browser
+# traffic and gRPC ingress; health probes come from the gateway too.
+version: warden-dev-1
+rules:
+  - id: gateway-forwards
+    from: ["spiffe://@@TRUST_DOMAIN@@/svc/gateway"]
+    to: ["warden"]
+    operations: ["*"]
+    effect: allow
+  # ticket resolves its relay-token / SMTP-password references at use time. The
+  # call still carries a platform token and passes warden's per-secret check.
+  - id: ticket-secrets
+    from: ["spiffe://@@TRUST_DOMAIN@@/svc/ticket"]
+    to: ["warden"]
+    operations: ["/warden.v1.Secrets/GetPassword"]
+    effect: allow
+  # ipam fetches a device's BMC credentials on behalf of the signed-in user
+  # (ipam feature 024): metadata to validate/show the reference, the password
+  # right before a power, sensor or KVM action. The call carries the user's
+  # platform token and passes warden's per-secret check and audit.
+  - id: ipam-bmc-secrets
+    from: ["spiffe://@@TRUST_DOMAIN@@/svc/ipam"]
+    to: ["warden"]
+    operations: ["/warden.v1.Secrets/Get", "/warden.v1.Secrets/GetPassword"]
+    effect: allow
+  # signing reads the time-stamp authority credentials of administrator
+  # document signing on behalf of the signed-in user (signing feature 027):
+  # metadata for the TSA address, the password right before the time-stamp
+  # request. The call carries the user's platform token and passes warden's
+  # per-secret check and audit.
+  - id: signing-tsa-secrets
+    from: ["spiffe://@@TRUST_DOMAIN@@/svc/signing"]
+    to: ["warden"]
+    operations: ["/warden.v1.Secrets/Get", "/warden.v1.Secrets/GetPassword"]
+    effect: allow

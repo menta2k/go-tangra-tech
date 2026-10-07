@@ -1,0 +1,2651 @@
+{
+  "modules": {
+    "auth": {
+      "path": "pkg/authmanifest/manifest.go",
+      "snapshot": "content/permissions/auth/manifest.go",
+      "sha256": "a4e7456a371bf412eafbd8cd356dec6b62ce934d284b3f6f038e218edaf3ab49",
+      "permissions": [
+        {
+          "ref": "profile:read",
+          "description": "See and manage the own account, sessions and second factor",
+          "abilities": [
+            {
+              "actions": [
+                "read",
+                "update"
+              ],
+              "subjects": [
+                "Profile",
+                "Session"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Security",
+              "path_expression": "ConsolePrefix + \"/security\""
+            }
+          ]
+        },
+        {
+          "ref": "users:manage",
+          "description": "Invite, deactivate and assign roles to users of the tenant",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "User",
+                "Invitation"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Users",
+              "path_expression": "ConsolePrefix + \"/admin/users\""
+            }
+          ]
+        },
+        {
+          "ref": "groups:manage",
+          "description": "Create groups, manage their members and the roles they grant",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "Group"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Groups",
+              "path_expression": "ConsolePrefix + \"/admin/groups\""
+            }
+          ]
+        },
+        {
+          "ref": "roles:manage",
+          "description": "Create and edit custom roles",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "Role"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Roles",
+              "path_expression": "ConsolePrefix + \"/admin/roles\""
+            }
+          ]
+        },
+        {
+          "ref": "policy:manage",
+          "description": "Edit the tenant sign-in policy",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "Policy"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Policy",
+              "path_expression": "ConsolePrefix + \"/admin/policy\""
+            }
+          ]
+        },
+        {
+          "ref": "audit:read",
+          "description": "Read the tenant audit log",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "AuditEvent"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Audit",
+              "path_expression": "ConsolePrefix + \"/admin/audit\""
+            }
+          ]
+        },
+        {
+          "ref": "clients:manage",
+          "description": "Register OAuth client applications",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "ClientApplication"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Clients",
+              "path_expression": "ConsolePrefix + \"/admin/clients\""
+            }
+          ]
+        },
+        {
+          "ref": "directory:manage",
+          "description": "Connect LDAP directories, search them and import users as inactive",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "DirectoryConnection"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Directories",
+              "path_expression": "ConsolePrefix + \"/admin/directories\""
+            }
+          ]
+        },
+        {
+          "ref": "tenants:operate",
+          "description": "Create, suspend and inspect tenants (platform operators)",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "Tenant",
+                "OperatorGrant"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Tenants",
+              "path_expression": "ConsolePrefix + \"/operator/tenants\""
+            }
+          ]
+        }
+      ]
+    },
+    "lcm": {
+      "path": "pkg/lcmmanifest/manifest.go",
+      "snapshot": "content/permissions/lcm/manifest.go",
+      "sha256": "064ae82ae19738140258f2ff887ca95004e47403006463d28e000535b74cc37f",
+      "permissions": [
+        {
+          "ref": "certificates:read",
+          "description": "List and read certificates/SVIDs the caller is granted",
+          "abilities": [
+            {
+              "actions": [
+                "read",
+                "create",
+                "update",
+                "delete",
+                "share",
+                "use"
+              ],
+              "subjects": [
+                "Certificate"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Certificates",
+              "path_expression": "\"/lcm/certificates\""
+            }
+          ]
+        },
+        {
+          "ref": "certificates:issue",
+          "description": "Issue certificates/SVIDs for identities the caller may use",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "certificates:manage",
+          "description": "Renew, deploy, update and delete certificates the caller is granted",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "certificates:revoke",
+          "description": "Revoke certificates the caller is granted",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "issuers:read",
+          "description": "List and read issuers (credentials redacted)",
+          "abilities": [
+            {
+              "actions": [
+                "read",
+                "create",
+                "update",
+                "delete",
+                "share"
+              ],
+              "subjects": [
+                "Issuer"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Issuers",
+              "path_expression": "\"/lcm/issuers\""
+            }
+          ]
+        },
+        {
+          "ref": "issuers:manage",
+          "description": "Create, change and delete issuers and their CAs",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "enrollment:enroll",
+          "description": "Enroll a workload for an SVID with a platform identity or enrollment token",
+          "abilities": [
+            {
+              "actions": [
+                "enroll"
+              ],
+              "subjects": [
+                "Enrollment"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "jobs:read",
+          "description": "List and read certificate jobs",
+          "abilities": [
+            {
+              "actions": [
+                "read",
+                "manage"
+              ],
+              "subjects": [
+                "CertificateJob"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Requests",
+              "path_expression": "\"/lcm/requests\""
+            }
+          ]
+        },
+        {
+          "ref": "jobs:manage",
+          "description": "Cancel and retry certificate jobs",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "permissions:manage",
+          "description": "Grant and revoke access on certificates and issuers the caller may share",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "LcmGrant"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Permissions",
+              "path_expression": "\"/lcm/permissions\""
+            }
+          ]
+        },
+        {
+          "ref": "secrets:manage",
+          "description": "Create, rotate and delete tenant secrets (ACME/DNS credentials)",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "TenantSecret"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Secrets",
+              "path_expression": "\"/lcm/secrets\""
+            }
+          ]
+        },
+        {
+          "ref": "webhooks:manage",
+          "description": "Create and delete outbound webhook endpoints",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "Webhook"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "backup:manage",
+          "description": "Export and import tenant backups (bulk disclosure with credentials on request)",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "LcmBackup"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "stats:read",
+          "description": "Read statistics, health and the audit trail",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "LcmStats",
+                "LcmAudit"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Dashboard",
+              "path_expression": "\"/lcm\""
+            },
+            {
+              "title": "Audit",
+              "path_expression": "\"/lcm/audit\""
+            }
+          ]
+        }
+      ]
+    },
+    "warden": {
+      "path": "pkg/wardenmanifest/manifest.go",
+      "snapshot": "content/permissions/warden/manifest.go",
+      "sha256": "3ee0a852e63b52fb2d01e7474173be4a12a96cd9dc8ac14b0ae05ac603f2e1b0",
+      "permissions": [
+        {
+          "ref": "secrets:read",
+          "description": "Read secrets and reveal passwords the caller is granted",
+          "abilities": [
+            {
+              "actions": [
+                "read",
+                "create",
+                "update",
+                "delete",
+                "share"
+              ],
+              "subjects": [
+                "Secret"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Secrets",
+              "path_expression": "\"/warden\""
+            },
+            {
+              "title": "Generator",
+              "path_expression": "\"/warden/generator\""
+            }
+          ]
+        },
+        {
+          "ref": "secrets:write",
+          "description": "Create and change secrets the caller is granted",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "secrets:delete",
+          "description": "Delete secrets the caller owns",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "secrets:share",
+          "description": "Create external shares of secrets the caller may share",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "folders:manage",
+          "description": "Create, move and delete folders the caller is granted",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "Folder"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "permissions:manage",
+          "description": "Grant and revoke access on resources the caller may share",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "Grant"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Permissions",
+              "path_expression": "\"/warden/permissions\""
+            }
+          ]
+        },
+        {
+          "ref": "transfer:import",
+          "description": "Import Bitwarden exports",
+          "abilities": [
+            {
+              "actions": [
+                "import"
+              ],
+              "subjects": [
+                "Transfer"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "transfer:export",
+          "description": "Export secrets to Bitwarden format (bulk disclosure)",
+          "abilities": [
+            {
+              "actions": [
+                "export"
+              ],
+              "subjects": [
+                "Transfer"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "backup:manage",
+          "description": "Export and import tenant backups (bulk disclosure with material)",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "Backup"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "stats:read",
+          "description": "Read statistics and the audit trail",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "Stats",
+                "WardenAudit"
+              ]
+            }
+          ],
+          "navigation": []
+        }
+      ]
+    },
+    "notification": {
+      "path": "pkg/notificationmanifest/manifest.go",
+      "snapshot": "content/permissions/notification/manifest.go",
+      "sha256": "7be2f3016482f18506777ba66c8098bc63b714e672d20606c6614ad5ca2736ea",
+      "permissions": [
+        {
+          "ref": "channels:read",
+          "description": "List and read notification channels the caller is granted (settings redacted)",
+          "abilities": [
+            {
+              "actions": [
+                "read",
+                "create",
+                "update",
+                "delete",
+                "share",
+                "use"
+              ],
+              "subjects": [
+                "Channel"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Channels",
+              "path_expression": "\"/notification/channels\""
+            }
+          ]
+        },
+        {
+          "ref": "channels:manage",
+          "description": "Create, change, test and delete channels the caller is granted",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "templates:read",
+          "description": "List, read and preview templates the caller is granted",
+          "abilities": [
+            {
+              "actions": [
+                "read",
+                "create",
+                "update",
+                "delete",
+                "share",
+                "use"
+              ],
+              "subjects": [
+                "Template"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Templates",
+              "path_expression": "\"/notification/templates\""
+            }
+          ]
+        },
+        {
+          "ref": "templates:manage",
+          "description": "Create, change and delete templates the caller is granted",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "notifications:send",
+          "description": "Send notifications through templates and channels the caller may use",
+          "abilities": [
+            {
+              "actions": [
+                "send"
+              ],
+              "subjects": [
+                "Notification"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "notifications:read",
+          "description": "Read the notification log (own sends without stats:read)",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "NotificationLog"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Log",
+              "path_expression": "\"/notification/log\""
+            }
+          ]
+        },
+        {
+          "ref": "messages:read",
+          "description": "List message categories and messages",
+          "abilities": [],
+          "navigation": [
+            {
+              "title": "Messages",
+              "path_expression": "\"/notification/messages\""
+            }
+          ]
+        },
+        {
+          "ref": "messages:manage",
+          "description": "Create, send, revoke and archive internal messages; manage categories",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "Message",
+                "MessageCategory"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Categories",
+              "path_expression": "\"/notification/categories\""
+            }
+          ]
+        },
+        {
+          "ref": "inbox:read",
+          "description": "Read and manage the caller's own inbox and live stream",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "Inbox"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Inbox",
+              "path_expression": "\"/notification/inbox\""
+            }
+          ]
+        },
+        {
+          "ref": "events:publish",
+          "description": "Publish live events to users of the tenant (modules)",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "permissions:manage",
+          "description": "Grant and revoke access on channels and templates the caller may share",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "NotificationGrant"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Permissions",
+              "path_expression": "\"/notification/permissions\""
+            }
+          ]
+        },
+        {
+          "ref": "backup:manage",
+          "description": "Export and import tenant backups (bulk disclosure with credentials on request)",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "NotificationBackup"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "stats:read",
+          "description": "Read statistics, health and the audit trail",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "NotificationStats",
+                "NotificationAudit"
+              ]
+            }
+          ],
+          "navigation": []
+        }
+      ]
+    },
+    "scheduler": {
+      "path": "pkg/schedulermanifest/manifest.go",
+      "snapshot": "content/permissions/scheduler/manifest.go",
+      "sha256": "351ec8d000372650337894a023c66f54ad534dbb626ef790dea8b1e45a00b714",
+      "permissions": [
+        {
+          "ref": "scheduler:read",
+          "description": "List task types, tasks, execution history and the overview, preview cron schedules and follow the live stream",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "SchedulerTask",
+                "SchedulerExecution",
+                "SchedulerOverview",
+                "SchedulerTaskType"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Scheduler",
+              "path_expression": "\"/scheduler\""
+            },
+            {
+              "title": "Dashboard",
+              "path_expression": "\"/scheduler/dashboard\""
+            }
+          ]
+        },
+        {
+          "ref": "tasks:manage",
+          "description": "Create and edit scheduled tasks, enable or disable them, and retire a removed module's task types (platform administrators)",
+          "abilities": [
+            {
+              "actions": [
+                "create",
+                "update"
+              ],
+              "subjects": [
+                "SchedulerTask"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "tasks:delete",
+          "description": "Delete scheduled tasks",
+          "abilities": [
+            {
+              "actions": [
+                "delete"
+              ],
+              "subjects": [
+                "SchedulerTask"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "tasks:control",
+          "description": "Start, stop, restart, run now, run again and cancel tasks, including bulk actions",
+          "abilities": [
+            {
+              "actions": [
+                "control"
+              ],
+              "subjects": [
+                "SchedulerTask"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "backup:manage",
+          "description": "Export and import scheduler tasks and history",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "SchedulerBackup"
+              ]
+            }
+          ],
+          "navigation": []
+        }
+      ]
+    },
+    "inventory": {
+      "path": "pkg/inventorymanifest/manifest.go",
+      "snapshot": "content/permissions/inventory/manifest.go",
+      "sha256": "ed0bf99925b0393384c380c8caf800af61951aba1f5cf283a726cab23d878443",
+      "permissions": [
+        {
+          "ref": "inventory:read",
+          "description": "List and read hosts, snapshots and the live stream",
+          "abilities": [
+            {
+              "actions": [
+                "read",
+                "create",
+                "update",
+                "delete"
+              ],
+              "subjects": [
+                "InventoryHost"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Hosts",
+              "path_expression": "\"/inventory\""
+            }
+          ]
+        },
+        {
+          "ref": "inventory:write",
+          "description": "Contribute inventory data (manual snapshots, imports)",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "hosts:manage",
+          "description": "Tag, retire and delete hosts",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "agents:manage",
+          "description": "Enroll, refresh, list, upgrade and revoke endpoint agents",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "InventoryAgent"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Agents",
+              "path_expression": "\"/inventory/agents\""
+            }
+          ]
+        },
+        {
+          "ref": "agentupgrades:manage",
+          "description": "Configure automatic agent upgrades and the target agent version",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "InventoryAgentUpgradePolicy"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "snapshots:read",
+          "description": "Read snapshot history, diffs and change records",
+          "abilities": [
+            {
+              "actions": [
+                "read",
+                "create",
+                "update",
+                "delete"
+              ],
+              "subjects": [
+                "InventorySnapshot"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "snapshots:manage",
+          "description": "Delete snapshots",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "stats:read",
+          "description": "Read inventory statistics",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "InventoryStats"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Dashboard",
+              "path_expression": "\"/inventory/dashboard\""
+            }
+          ]
+        },
+        {
+          "ref": "backup:manage",
+          "description": "Export and import tenant inventory data",
+          "abilities": [],
+          "navigation": []
+        }
+      ]
+    },
+    "ipam": {
+      "path": "pkg/ipammanifest/manifest.go",
+      "snapshot": "content/permissions/ipam/manifest.go",
+      "sha256": "3448f85312695aff9a97fb1f5df3714f29aa2dc86a480a1b5acaf78417262daa",
+      "permissions": [
+        {
+          "ref": "ipam:read",
+          "description": "List and read subnets, addresses, devices, groups, scans and the live stream",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "Subnet",
+                "IpAddress",
+                "Device",
+                "Vlan",
+                "Location",
+                "IpGroup",
+                "HostGroup",
+                "IpScan"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Subnets",
+              "path_expression": "\"/ipam\""
+            },
+            {
+              "title": "IP Addresses",
+              "path_expression": "\"/ipam/addresses\""
+            },
+            {
+              "title": "Devices",
+              "path_expression": "\"/ipam/devices\""
+            },
+            {
+              "title": "VLANs",
+              "path_expression": "\"/ipam/vlans\""
+            },
+            {
+              "title": "Locations",
+              "path_expression": "\"/ipam/locations\""
+            },
+            {
+              "title": "Groups",
+              "path_expression": "\"/ipam/groups\""
+            },
+            {
+              "title": "Scans",
+              "path_expression": "\"/ipam/scans\""
+            },
+            {
+              "title": "Host sync",
+              "path_expression": "\"/ipam/host-sync\""
+            },
+            {
+              "title": "Dashboard",
+              "path_expression": "\"/ipam/dashboard\""
+            }
+          ]
+        },
+        {
+          "ref": "subnets:manage",
+          "description": "Create, update and delete subnets",
+          "abilities": [
+            {
+              "actions": [
+                "configure"
+              ],
+              "subjects": [
+                "SubnetSnmp"
+              ]
+            },
+            {
+              "actions": [
+                "configure"
+              ],
+              "subjects": [
+                "ArpSettings"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "addresses:manage",
+          "description": "Create, update and delete IP addresses",
+          "abilities": [
+            {
+              "actions": [
+                "clear"
+              ],
+              "subjects": [
+                "AddressConflict"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "addresses:allocate",
+          "description": "Allocate next-free and bulk IP addresses",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "devices:manage",
+          "description": "Create, update and delete devices, interfaces and packages",
+          "abilities": [
+            {
+              "actions": [
+                "resync"
+              ],
+              "subjects": [
+                "HostSync"
+              ]
+            },
+            {
+              "actions": [
+                "configure"
+              ],
+              "subjects": [
+                "DeviceBmc"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "vlans:manage",
+          "description": "Create, update and delete VLANs",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "locations:manage",
+          "description": "Create, update and delete locations",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "groups:manage",
+          "description": "Create, update and delete IP and host groups and their members",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "scan:run",
+          "description": "Start subnet and address discovery scans and ping",
+          "abilities": [
+            {
+              "actions": [
+                "test"
+              ],
+              "subjects": [
+                "SubnetSnmp"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "dns:manage",
+          "description": "Read and update the per-tenant DNS configuration",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "backup:manage",
+          "description": "Export and import tenant IPAM data",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "power:control",
+          "description": "Out-of-band power status and actions via device BMC (platform-admin)",
+          "abilities": [
+            {
+              "actions": [
+                "control"
+              ],
+              "subjects": [
+                "Power"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "kvm:access",
+          "description": "Start token-gated KVM console sessions (platform-admin)",
+          "abilities": [
+            {
+              "actions": [
+                "access"
+              ],
+              "subjects": [
+                "Kvm"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "hostsync:manage",
+          "description": "Enable or disable the host sync and edit its interface exclusions",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "HostSync"
+              ]
+            }
+          ],
+          "navigation": []
+        }
+      ]
+    },
+    "dns": {
+      "path": "pkg/dnsmanifest/manifest.go",
+      "snapshot": "content/permissions/dns/manifest.go",
+      "sha256": "317097b220ced4866c8599279cd026a871aa2c38607f36d0210e1fb17e376a2c",
+      "permissions": [
+        {
+          "ref": "zones:read",
+          "description": "List and read zones, record sets and templates, and the live stream",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "DnsZone",
+                "DnsRecord",
+                "DnsTemplate"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Zones",
+              "path_expression": "\"/dns\""
+            },
+            {
+              "title": "Templates",
+              "path_expression": "\"/dns/templates\""
+            }
+          ]
+        },
+        {
+          "ref": "zones:manage",
+          "description": "Create, edit and delete zones and record sets; export zones and send NOTIFY",
+          "abilities": [
+            {
+              "actions": [
+                "create",
+                "update",
+                "delete",
+                "export",
+                "notify"
+              ],
+              "subjects": [
+                "DnsZone",
+                "DnsRecord"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "templates:manage",
+          "description": "Manage zone templates",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "DnsTemplate"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "supermasters:manage",
+          "description": "View supermasters (create/delete also need platform administration)",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "DnsSupermaster"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Supermasters",
+              "path_expression": "\"/dns/supermasters\""
+            }
+          ]
+        },
+        {
+          "ref": "dashboard:read",
+          "description": "Read the DNS health dashboard",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "DnsDashboard"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Dashboard",
+              "path_expression": "\"/dns/dashboard\""
+            }
+          ]
+        },
+        {
+          "ref": "backup:manage",
+          "description": "Export and import tenant DNS data",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "DnsBackup"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "config:manage",
+          "description": "Edit the DNS server configuration (platform administrators only)",
+          "abilities": [
+            {
+              "actions": [
+                "create",
+                "delete"
+              ],
+              "subjects": [
+                "DnsSupermaster"
+              ]
+            },
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "DnsConfig"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Configuration",
+              "path_expression": "\"/dns/configuration\""
+            }
+          ]
+        }
+      ]
+    },
+    "deployer": {
+      "path": "pkg/deployermanifest/manifest.go",
+      "snapshot": "content/permissions/deployer/manifest.go",
+      "sha256": "76045069bd053a8e513c098722b97ea57e9f94579b89d04090e872504f944bec",
+      "permissions": [
+        {
+          "ref": "configurations:read",
+          "description": "List and read deployment endpoint configurations (credentials redacted)",
+          "abilities": [
+            {
+              "actions": [
+                "read",
+                "create",
+                "update",
+                "delete"
+              ],
+              "subjects": [
+                "DeployerConfiguration"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Configurations",
+              "path_expression": "\"/deployer/configurations\""
+            }
+          ]
+        },
+        {
+          "ref": "configurations:manage",
+          "description": "Create, change, delete and validate deployment configurations",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "targets:read",
+          "description": "List and read deployment targets and their filters",
+          "abilities": [
+            {
+              "actions": [
+                "read",
+                "create",
+                "update",
+                "delete"
+              ],
+              "subjects": [
+                "DeployerTarget"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Targets",
+              "path_expression": "\"/deployer/targets\""
+            }
+          ]
+        },
+        {
+          "ref": "targets:manage",
+          "description": "Create, change and delete deployment targets and attachments",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "jobs:read",
+          "description": "List and read deployment jobs and their history",
+          "abilities": [
+            {
+              "actions": [
+                "read",
+                "manage"
+              ],
+              "subjects": [
+                "DeployerJob"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Jobs",
+              "path_expression": "\"/deployer/jobs\""
+            }
+          ]
+        },
+        {
+          "ref": "jobs:manage",
+          "description": "Cancel and retry deployment jobs",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "deploy:execute",
+          "description": "Deploy, verify and roll back certificates to endpoints",
+          "abilities": [
+            {
+              "actions": [
+                "execute"
+              ],
+              "subjects": [
+                "Deployment"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "stats:read",
+          "description": "Read deployment statistics",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "DeployerStats"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Dashboard",
+              "path_expression": "\"/deployer\""
+            }
+          ]
+        },
+        {
+          "ref": "backup:manage",
+          "description": "Export and import tenant deployment configuration",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "DeployerBackup"
+              ]
+            }
+          ],
+          "navigation": []
+        }
+      ]
+    },
+    "asset": {
+      "path": "pkg/assetmanifest/manifest.go",
+      "snapshot": "content/permissions/asset/manifest.go",
+      "sha256": "20646ca259629b93ba3eb27704462040a9e4c1f25621c594a97eee092b359ef1",
+      "permissions": [
+        {
+          "ref": "assets:read",
+          "description": "List and read assets, org records, documents, users and the live stream",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "Asset",
+                "AssetCategory",
+                "AssetSupplier",
+                "AssetLocation",
+                "AssetConsumable",
+                "AssetLicense",
+                "AssetInsurance"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Assets",
+              "path_expression": "\"/asset\""
+            },
+            {
+              "title": "Categories",
+              "path_expression": "\"/asset/categories\""
+            },
+            {
+              "title": "Suppliers",
+              "path_expression": "\"/asset/suppliers\""
+            },
+            {
+              "title": "Locations",
+              "path_expression": "\"/asset/locations\""
+            },
+            {
+              "title": "Consumables",
+              "path_expression": "\"/asset/consumables\""
+            },
+            {
+              "title": "Licenses",
+              "path_expression": "\"/asset/licenses\""
+            },
+            {
+              "title": "Insurance",
+              "path_expression": "\"/asset/insurance\""
+            },
+            {
+              "title": "Document search",
+              "path_expression": "\"/asset/documents\""
+            }
+          ]
+        },
+        {
+          "ref": "assets:manage",
+          "description": "Create, update and delete assets",
+          "abilities": [
+            {
+              "actions": [
+                "create",
+                "update",
+                "delete"
+              ],
+              "subjects": [
+                "Asset"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "assets:assign",
+          "description": "Assign and unassign assets to users",
+          "abilities": [
+            {
+              "actions": [
+                "assign"
+              ],
+              "subjects": [
+                "Asset"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "categories:manage",
+          "description": "Manage the category tree",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "AssetCategory"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "suppliers:manage",
+          "description": "Manage suppliers",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "AssetSupplier"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "locations:manage",
+          "description": "Manage the location tree",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "AssetLocation"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "consumables:manage",
+          "description": "Manage consumables (stock)",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "AssetConsumable"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "licenses:manage",
+          "description": "Manage software licenses",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "AssetLicense"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "insurance:manage",
+          "description": "Manage insurance policies and asset coverage",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "AssetInsurance"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "documents:manage",
+          "description": "Upload and delete photos and documents",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "AssetDocument"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "inventory:sync",
+          "description": "Preview and execute inventory synchronisation",
+          "abilities": [
+            {
+              "actions": [
+                "sync"
+              ],
+              "subjects": [
+                "AssetInventory"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Inventory Sync",
+              "path_expression": "\"/asset/inventory-sync\""
+            }
+          ]
+        },
+        {
+          "ref": "stats:read",
+          "description": "Read the asset dashboard statistics",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "AssetStats"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Dashboard",
+              "path_expression": "\"/asset/dashboard\""
+            }
+          ]
+        },
+        {
+          "ref": "backup:manage",
+          "description": "Export and import tenant asset data",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "AssetBackup"
+              ]
+            }
+          ],
+          "navigation": []
+        }
+      ]
+    },
+    "paperless": {
+      "path": "pkg/paperlessmanifest/manifest.go",
+      "snapshot": "content/permissions/paperless/manifest.go",
+      "sha256": "3d66a53a5256369e50881a3035cb6138149f3a46fee58dfdea4daf53fdcd7791",
+      "permissions": [
+        {
+          "ref": "documents:read",
+          "description": "List, read and download documents",
+          "abilities": [
+            {
+              "actions": [
+                "read",
+                "create",
+                "update",
+                "delete"
+              ],
+              "subjects": [
+                "PaperlessDocument"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Documents",
+              "path_expression": "\"/paperless\""
+            }
+          ]
+        },
+        {
+          "ref": "documents:write",
+          "description": "Upload, update and move documents",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "documents:delete",
+          "description": "Delete documents",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "categories:read",
+          "description": "Browse the category tree",
+          "abilities": [
+            {
+              "actions": [
+                "read",
+                "create",
+                "update",
+                "delete"
+              ],
+              "subjects": [
+                "PaperlessCategory"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Categories",
+              "path_expression": "\"/paperless/categories\""
+            }
+          ]
+        },
+        {
+          "ref": "categories:manage",
+          "description": "Create, change, move and delete categories",
+          "abilities": [],
+          "navigation": []
+        },
+        {
+          "ref": "permissions:manage",
+          "description": "Grant and revoke access to documents and categories",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "PaperlessPermission"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "search:read",
+          "description": "Full-text search documents",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "PaperlessSearch"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Search",
+              "path_expression": "\"/paperless/search\""
+            }
+          ]
+        },
+        {
+          "ref": "stats:read",
+          "description": "Read document statistics",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "PaperlessStats"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Dashboard",
+              "path_expression": "\"/paperless/dashboard\""
+            }
+          ]
+        },
+        {
+          "ref": "backup:manage",
+          "description": "Export and import tenant documents and permissions",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "PaperlessBackup"
+              ]
+            }
+          ],
+          "navigation": []
+        }
+      ]
+    },
+    "ticket": {
+      "path": "pkg/ticketmanifest/manifest.go",
+      "snapshot": "content/permissions/ticket/manifest.go",
+      "sha256": "d53417365140c8c826b9461ed1f4fb32d55ee63b93535b9b3f0dd3c7f6494471",
+      "permissions": [
+        {
+          "ref": "tickets:read",
+          "description": "List and read tickets, conversations, attachments, tags, assignable users and the live stream",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "Ticket",
+                "TicketTag"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Tickets",
+              "path_expression": "\"/ticket\""
+            },
+            {
+              "title": "Tags",
+              "path_expression": "\"/ticket/tags\""
+            }
+          ]
+        },
+        {
+          "ref": "tickets:manage",
+          "description": "Create and edit tickets, assign, change status, set tags, add notes and send replies",
+          "abilities": [
+            {
+              "actions": [
+                "create",
+                "update",
+                "assign",
+                "comment",
+                "reply"
+              ],
+              "subjects": [
+                "Ticket"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "tickets:delete",
+          "description": "Delete tickets with their conversations and attachments",
+          "abilities": [
+            {
+              "actions": [
+                "delete"
+              ],
+              "subjects": [
+                "Ticket"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "tags:manage",
+          "description": "Manage the tag and category vocabulary",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "TicketTag"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "rules:manage",
+          "description": "Manage inbound triage rules",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "TicketRule"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Rules",
+              "path_expression": "\"/ticket/rules\""
+            }
+          ]
+        },
+        {
+          "ref": "mailboxes:manage",
+          "description": "Manage inbound mailboxes and acknowledgements",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "TicketMailbox"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Mailboxes",
+              "path_expression": "\"/ticket/mailboxes\""
+            }
+          ]
+        },
+        {
+          "ref": "stats:read",
+          "description": "Read the ticket dashboard statistics",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "TicketStats"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Dashboard",
+              "path_expression": "\"/ticket/dashboard\""
+            }
+          ]
+        },
+        {
+          "ref": "backup:manage",
+          "description": "Export and import tenant ticket data",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "TicketBackup"
+              ]
+            }
+          ],
+          "navigation": []
+        }
+      ]
+    },
+    "signing": {
+      "path": "pkg/signingmanifest/manifest.go",
+      "snapshot": "content/permissions/signing/manifest.go",
+      "sha256": "f3fe99a15b7cfc54deba392d7ccea0c120a3a564533b19ac153bdac1ee64682e",
+      "permissions": [
+        {
+          "ref": "signing:sign",
+          "description": "Sign or decline documents assigned to me, see my inbox and manage my own signing certificate",
+          "abilities": [
+            {
+              "actions": [
+                "sign"
+              ],
+              "subjects": [
+                "SigningDocument",
+                "SigningCertificate"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "To sign",
+              "path_expression": "\"/signing\""
+            },
+            {
+              "title": "My certificate",
+              "path_expression": "\"/signing/certificate\""
+            }
+          ]
+        },
+        {
+          "ref": "signing:read",
+          "description": "View templates, folders and every submission of the tenant, and verify signed documents",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "SigningTemplate",
+                "SigningSubmission",
+                "SigningVerification"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Templates",
+              "path_expression": "\"/signing/templates\""
+            },
+            {
+              "title": "Verify",
+              "path_expression": "\"/signing/verify\""
+            }
+          ]
+        },
+        {
+          "ref": "templates:manage",
+          "description": "Create, edit, clone, archive and delete templates and folders, and use the field builder",
+          "abilities": [
+            {
+              "actions": [
+                "create",
+                "update",
+                "delete"
+              ],
+              "subjects": [
+                "SigningTemplate"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "submissions:create",
+          "description": "Send documents for signature and manage the submissions I sent",
+          "abilities": [
+            {
+              "actions": [
+                "create"
+              ],
+              "subjects": [
+                "SigningSubmission"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Submissions",
+              "path_expression": "\"/signing/submissions\""
+            }
+          ]
+        },
+        {
+          "ref": "submissions:manage",
+          "description": "Cancel, resend, replace signers of and delete any submission of the tenant",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "SigningSubmission"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "certificates:manage",
+          "description": "Manage the tenant signing CA and certificates, revoke certificates and sign documents with administrator certificates",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "SigningCertificate"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Certificates",
+              "path_expression": "\"/signing/certificates\""
+            }
+          ]
+        },
+        {
+          "ref": "backup:manage",
+          "description": "Export and import the tenant's signing data",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "SigningBackup"
+              ]
+            }
+          ],
+          "navigation": []
+        }
+      ]
+    },
+    "hr": {
+      "path": "pkg/hrmanifest/manifest.go",
+      "snapshot": "content/permissions/hr/manifest.go",
+      "sha256": "cec2d2f1290160100699a38c72779b83f1a4fbbab75103dae90e14a61296ff24",
+      "permissions": [
+        {
+          "ref": "hr:calendar",
+          "description": "See the team calendar: who is absent when, with the absence type",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "HrCalendar"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Leave calendar",
+              "path_expression": "\"/hr\""
+            }
+          ]
+        },
+        {
+          "ref": "hr:request",
+          "description": "Request leave for myself, see my requests and my balance (managers also approve for their departments)",
+          "abilities": [
+            {
+              "actions": [
+                "create",
+                "read"
+              ],
+              "subjects": [
+                "HrRequest"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "My leave",
+              "path_expression": "\"/hr/requests\""
+            },
+            {
+              "title": "To review",
+              "path_expression": "\"/hr/review\""
+            }
+          ]
+        },
+        {
+          "ref": "hr:read",
+          "description": "Read every leave request, balance, allowance, absence type, department and holiday of the tenant",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "HrRequest",
+                "HrAllowance",
+                "HrAbsenceType",
+                "HrDepartment",
+                "HrStats"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Allowances",
+              "path_expression": "\"/hr/allowances\""
+            },
+            {
+              "title": "Absence types",
+              "path_expression": "\"/hr/absence-types\""
+            },
+            {
+              "title": "Departments",
+              "path_expression": "\"/hr/departments\""
+            },
+            {
+              "title": "Holidays",
+              "path_expression": "\"/hr/holidays\""
+            },
+            {
+              "title": "HR statistics",
+              "path_expression": "\"/hr/stats\""
+            }
+          ]
+        },
+        {
+          "ref": "hr:manage",
+          "description": "Manage absence types, pools, allowances, departments and holidays, act for anyone, run carry-over and backups",
+          "abilities": [
+            {
+              "actions": [
+                "manage"
+              ],
+              "subjects": [
+                "HrRequest",
+                "HrAllowance",
+                "HrAbsenceType",
+                "HrDepartment",
+                "HrHoliday",
+                "HrBackup"
+              ]
+            }
+          ],
+          "navigation": []
+        }
+      ]
+    },
+    "sms-gw": {
+      "path": "pkg/smsgwmanifest/manifest.go",
+      "snapshot": "content/permissions/sms-gw/manifest.go",
+      "sha256": "065085d27f968d8f52b47b384e8ea011d33ea1bcf721726eef2bdef3bd48e0d4",
+      "permissions": [
+        {
+          "ref": "providers:read",
+          "description": "List and read SMS providers and provider types (credentials redacted)",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "SmsProvider"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "SMS providers",
+              "path_expression": "\"/sms-gw/providers\""
+            }
+          ]
+        },
+        {
+          "ref": "providers:manage",
+          "description": "Create, change and delete SMS providers and their credentials",
+          "abilities": [
+            {
+              "actions": [
+                "create",
+                "update",
+                "delete"
+              ],
+              "subjects": [
+                "SmsProvider"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "templates:read",
+          "description": "List, read and preview SMS templates",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "SmsTemplate"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "SMS templates",
+              "path_expression": "\"/sms-gw/templates\""
+            }
+          ]
+        },
+        {
+          "ref": "templates:manage",
+          "description": "Create, change and delete SMS templates",
+          "abilities": [
+            {
+              "actions": [
+                "create",
+                "update",
+                "delete"
+              ],
+              "subjects": [
+                "SmsTemplate"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "clients:read",
+          "description": "List and read Hermes API clients (no passwords or secrets)",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "SmsApiClient"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "SMS API clients",
+              "path_expression": "\"/sms-gw/api-clients\""
+            }
+          ]
+        },
+        {
+          "ref": "clients:manage",
+          "description": "Create, change and delete Hermes API clients and reset their passwords",
+          "abilities": [
+            {
+              "actions": [
+                "create",
+                "update",
+                "delete"
+              ],
+              "subjects": [
+                "SmsApiClient"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "blocks:read",
+          "description": "List and read recipient blocks",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "SmsBlock"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "SMS blocks",
+              "path_expression": "\"/sms-gw/blocks\""
+            }
+          ]
+        },
+        {
+          "ref": "blocks:manage",
+          "description": "Create, change and delete recipient blocks",
+          "abilities": [
+            {
+              "actions": [
+                "create",
+                "update",
+                "delete"
+              ],
+              "subjects": [
+                "SmsBlock"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "messages:read",
+          "description": "Search messages and read their details and delivery receipts",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "SmsMessage"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "SMS messages",
+              "path_expression": "\"/sms-gw/messages\""
+            }
+          ]
+        },
+        {
+          "ref": "messages:send",
+          "description": "Send SMS messages from the portal",
+          "abilities": [
+            {
+              "actions": [
+                "send"
+              ],
+              "subjects": [
+                "SmsMessage"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "dashboard:read",
+          "description": "Read the monitoring dashboard: deployment-wide metric totals across all tenants (no records or identifiers)",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "SmsDashboard"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "SMS dashboard",
+              "path_expression": "\"/sms-gw/dashboard\""
+            }
+          ]
+        }
+      ]
+    },
+    "asterisk": {
+      "path": "pkg/asteriskmanifest/manifest.go",
+      "snapshot": "content/permissions/asterisk/manifest.go",
+      "sha256": "237149f5cee1f2909db5a15079676388f5f382191d010a29889a27e59e492a69",
+      "permissions": [
+        {
+          "ref": "calls:read",
+          "description": "Read calls",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "AsteriskCalls"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Call history",
+              "path_expression": "\"/asterisk\""
+            }
+          ]
+        },
+        {
+          "ref": "stats:read",
+          "description": "Read stats",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "AsteriskStats"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Overview",
+              "path_expression": "\"/asterisk/overview\""
+            },
+            {
+              "title": "Extensions",
+              "path_expression": "\"/asterisk/extensions\""
+            }
+          ]
+        },
+        {
+          "ref": "registration:read",
+          "description": "Read registration",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "AsteriskRegistration"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "live:read",
+          "description": "Read live",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "AsteriskLive"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Live calls",
+              "path_expression": "\"/asterisk/live\""
+            }
+          ]
+        },
+        {
+          "ref": "recordings:read",
+          "description": "Read recordings",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "AsteriskRecordings"
+              ]
+            }
+          ],
+          "navigation": []
+        },
+        {
+          "ref": "dashboard:read",
+          "description": "Read dashboard",
+          "abilities": [
+            {
+              "actions": [
+                "read"
+              ],
+              "subjects": [
+                "AsteriskDashboard"
+              ]
+            }
+          ],
+          "navigation": [
+            {
+              "title": "Monitoring",
+              "path_expression": "\"/asterisk/dashboards\""
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,248 @@
+[
+  {
+    "module": "platform",
+    "path": "deploy/stack/compose.yaml",
+    "commit": "2e9c08014dce3d7e0efd24699f4c6b532b71ee85",
+    "sha256": "eab393c3823d9d241fcd00f09327891c637a29ff55da8f96be36fb8248e5f3b5"
+  },
+  {
+    "module": "platform",
+    "path": "transport/runtime.go",
+    "commit": "2e9c08014dce3d7e0efd24699f4c6b532b71ee85",
+    "sha256": "82b0354088ff4dab140eba03f220623c379bf4fb7edd9b472b501980d730b1da"
+  },
+  {
+    "module": "auth",
+    "path": "cmd/authsvc/mint.go",
+    "commit": "bb0045aa72dd1451d73a6ee2764c5d69ec9cc633",
+    "sha256": "cc082b5f3978f3f252bdc1b25b7b202a8ad10f605c9ea514149c504b934080ec"
+  },
+  {
+    "module": "portal",
+    "path": "cmd/gatewaysvc/bootstrap.go",
+    "commit": "b473bb7a96e4be87cd55f511880c67446c35e303",
+    "sha256": "3ecf30a38075adec379eb1dbb72bfa228ea1effd27a9b62804efe540f524fede"
+  },
+  {
+    "module": "platform",
+    "path": "deploy/stack/configs/gateway.yaml",
+    "commit": "2e9c08014dce3d7e0efd24699f4c6b532b71ee85",
+    "sha256": "985e10af9904e00ddba4b96897d1154e972194e7b10a35eab9a1be1e890c434c"
+  },
+  {
+    "module": "platform",
+    "path": "deploy/stack/configs/auth.yaml",
+    "commit": "2e9c08014dce3d7e0efd24699f4c6b532b71ee85",
+    "sha256": "21409e712dac825a9223046e972d2dd883663c73105dcd5469370b4aab4aa3ac"
+  },
+  {
+    "module": "platform",
+    "path": "deploy/stack/configs/lcm.yaml",
+    "commit": "2e9c08014dce3d7e0efd24699f4c6b532b71ee85",
+    "sha256": "773b0a7b36f1d2743fa91b3a63714c7d884efe222a3143f984fe0eac06a1682a"
+  },
+  {
+    "module": "portal",
+    "path": "deploy/policy.yaml",
+    "commit": "b473bb7a96e4be87cd55f511880c67446c35e303",
+    "sha256": "2f4808b6bd724dbea89f0b7efede03edce42dbce733b8f3670b264ff0a4f12ad"
+  },
+  {
+    "module": "auth",
+    "path": "deploy/policy.yaml",
+    "commit": "bb0045aa72dd1451d73a6ee2764c5d69ec9cc633",
+    "sha256": "ec27513b894ea52e74ec866c68141ce56bcfc000c37cc7068f40b1db1595dd0d"
+  },
+  {
+    "module": "lcm",
+    "path": "deploy/policy.yaml",
+    "commit": "b4511efb2a4a60653b037447898f5476cca7f67a",
+    "sha256": "197eff8779c0bcbbfaac7f342bb2370c065dbbb36fb7b713a8465510b62d70f3"
+  },
+  {
+    "module": "platform",
+    "path": "deploy/stack/configs/warden.yaml",
+    "commit": "2e9c08014dce3d7e0efd24699f4c6b532b71ee85",
+    "sha256": "20c35a9a730300e0e7050ad43f88c24b57d6e054cad39ffd42762a8faa7b50b8"
+  },
+  {
+    "module": "warden",
+    "path": "deploy/policy.yaml",
+    "commit": "d7f797813b781cb22f41f2b2a2b75c270e0e660f",
+    "sha256": "8c237d31cb4415ac6f34828a2be276838b047284535dbab9aef23f175f1171e0"
+  },
+  {
+    "module": "platform",
+    "path": "deploy/stack/vault-init.sh",
+    "commit": "2e9c08014dce3d7e0efd24699f4c6b532b71ee85",
+    "sha256": "5a0d48c2e003339ee3a3127dc45d2b6393a39edc66b22255ab03c3163e8f97a4"
+  },
+  {
+    "module": "platform",
+    "path": "deploy/stack/configs/notification.yaml",
+    "commit": "2e9c08014dce3d7e0efd24699f4c6b532b71ee85",
+    "sha256": "83cbecbd686022b31ea4838b2bb473505f228fbf8dc90d603e5f4971a1b13df2"
+  },
+  {
+    "module": "notification",
+    "path": "deploy/policy.yaml",
+    "commit": "84f73a432d9bd0e493524a972d253067dd5a812d",
+    "sha256": "15102e67cb30faad812ac4b3a9cb0908c53084d522c808a5aaf7c97e335ea64d"
+  },
+  {
+    "module": "scheduler",
+    "path": "deploy/container.yaml",
+    "commit": "b8746bfeea0a54b6b3d0b937ea9d557148323b9e",
+    "sha256": "2d629b061f886c617e41de4f3f89b26ae1150733ac366f0d942901f568e8ce6c"
+  },
+  {
+    "module": "scheduler",
+    "path": "deploy/policy.yaml",
+    "commit": "b8746bfeea0a54b6b3d0b937ea9d557148323b9e",
+    "sha256": "2c4c1c4f6787dc8cdfe71eaa9432a76089f5d7c62bcb2c10ed45fb2bc6360c8f"
+  },
+  {
+    "module": "platform",
+    "path": "deploy/stack/configs/inventory.yaml",
+    "commit": "2e9c08014dce3d7e0efd24699f4c6b532b71ee85",
+    "sha256": "e6adc9b16d7e4a594866295bb20f7a799fc1de739e2b2f4deb62568ae50abcd1"
+  },
+  {
+    "module": "inventory",
+    "path": "deploy/policy.yaml",
+    "commit": "cfa3a28445fc7d175b900df81aecdac0dd6d9707",
+    "sha256": "62a52af851d3087b5fd8d1c65e8f4d2fd56d6a36904a92fd3c42c5db6bbc2850"
+  },
+  {
+    "module": "platform",
+    "path": "deploy/stack/configs/ipam.yaml",
+    "commit": "2e9c08014dce3d7e0efd24699f4c6b532b71ee85",
+    "sha256": "95940a11df15d9cc50affe350dc05f1e82ed4a9f6bb044b1343fbec8c3cd1824"
+  },
+  {
+    "module": "ipam",
+    "path": "deploy/policy.yaml",
+    "commit": "df4cab11e3d0a69aac0f90d97b83006dd808ab8a",
+    "sha256": "30a0b561c898c5230b8248f86d56b2303c62d54c33803499ec8b4581bfdf3b49"
+  },
+  {
+    "module": "platform",
+    "path": "deploy/stack/configs/dns.yaml",
+    "commit": "2e9c08014dce3d7e0efd24699f4c6b532b71ee85",
+    "sha256": "9276d81b8729cd569d79143cd910180ecb6762a336dc25e7956a2febdcaad488"
+  },
+  {
+    "module": "dns",
+    "path": "deploy/policy.yaml",
+    "commit": "10f9be2df98b2476c2029afcbeb8dec622b30788",
+    "sha256": "40f55f4e0442f7b465af83cee066a369de2e621caeb622519bec0120a29326cf"
+  },
+  {
+    "module": "platform",
+    "path": "deploy/stack/pdns/pdns.conf",
+    "commit": "2e9c08014dce3d7e0efd24699f4c6b532b71ee85",
+    "sha256": "ee3e8181db958348404f84d422e6488322ef334814983b9ad6fe2ec4404c53d1"
+  },
+  {
+    "module": "platform",
+    "path": "deploy/stack/pdns/recursor.yml",
+    "commit": "2e9c08014dce3d7e0efd24699f4c6b532b71ee85",
+    "sha256": "43c5348934d9766394dab1634126661cb64cd6dca8d0c29dee1d2f68541d7c6c"
+  },
+  {
+    "module": "platform",
+    "path": "deploy/stack/configs/deployer.yaml",
+    "commit": "2e9c08014dce3d7e0efd24699f4c6b532b71ee85",
+    "sha256": "d7414de8321082bb5312ddb0b8cf1cbb00ab044ae96091f4bd0db2296566527f"
+  },
+  {
+    "module": "deployer",
+    "path": "deploy/policy.yaml",
+    "commit": "6aaba449a1803f912370061adb700847155cea80",
+    "sha256": "76069e68d8ce284335be881491129131a572e3f9ac14a49270ad9a40d4ebe709"
+  },
+  {
+    "module": "platform",
+    "path": "deploy/stack/configs/paperless.yaml",
+    "commit": "2e9c08014dce3d7e0efd24699f4c6b532b71ee85",
+    "sha256": "f167d0d436703a211de6d301c55d48f2ebe076acc41927d4907d7aff71e3cd0f"
+  },
+  {
+    "module": "platform",
+    "path": "deploy/stack/configs/asset.yaml",
+    "commit": "2e9c08014dce3d7e0efd24699f4c6b532b71ee85",
+    "sha256": "970f7240e36b4fa0b72c68848af338c27a8dc0dff388919630d74aea1bc6b16a"
+  },
+  {
+    "module": "paperless",
+    "path": "deploy/policy.yaml",
+    "commit": "aaed98b1fe399cf0019014e8edf4ac3cde4a1ae0",
+    "sha256": "309bbfb96ec287c0ec4df9b4cb45adb48adcf847ca61822d2549d57193cc4030"
+  },
+  {
+    "module": "asset",
+    "path": "deploy/policy.yaml",
+    "commit": "ff6055e17e18f941a945c8cc8d1e1bf2ee44afa7",
+    "sha256": "b9959049ed07731ba99fc8d7c670b945efe9e74f2d08984a5fb82b4c1a2c9c5e"
+  },
+  {
+    "module": "platform",
+    "path": "deploy/stack/configs/ticket.yaml",
+    "commit": "2e9c08014dce3d7e0efd24699f4c6b532b71ee85",
+    "sha256": "8b165ce500b8f6ea46ee52e0e273ee8c54db92326b8d31da49a66266bfad1a9e"
+  },
+  {
+    "module": "ticket",
+    "path": "deploy/policy.yaml",
+    "commit": "51bd9b9f50c137376be99b56bfa4cf3badbe7f1e",
+    "sha256": "dcf61fb611bef378989ef088cdbf2d8cfba062a840b371143b6a855ab63e68a1"
+  },
+  {
+    "module": "platform",
+    "path": "deploy/stack/configs/signing.yaml",
+    "commit": "2e9c08014dce3d7e0efd24699f4c6b532b71ee85",
+    "sha256": "dd26e28d0154557e328778810673e64ec267b30644e4f2e6c1e464050c1e736d"
+  },
+  {
+    "module": "signing",
+    "path": "deploy/policy.yaml",
+    "commit": "041fcb91357fc68d5d736a2bc16450a1199254dd",
+    "sha256": "5e8d94852ad80e46abc9a681e8b0adb7b0eb91074dd406a7400df00b30ff5efa"
+  },
+  {
+    "module": "platform",
+    "path": "deploy/stack/configs/hr.yaml",
+    "commit": "2e9c08014dce3d7e0efd24699f4c6b532b71ee85",
+    "sha256": "0ff10c0fb8605c29246cbe563763fac056a74f68fe65b5a065f7095df6d0882e"
+  },
+  {
+    "module": "hr",
+    "path": "deploy/policy.yaml",
+    "commit": "d1aab9d2cde331d0b59527a418df249e5068ddea",
+    "sha256": "587de739f9442a80bdcc21846d1b11996a88bbcbc22308cac2c72e1fe3a728a4"
+  },
+  {
+    "module": "sms-gw",
+    "path": "deploy/container.yaml",
+    "commit": "80b17c822eb8b47b91645b06c4ca637517af42ac",
+    "sha256": "acf332bc8aacbbcfdbeff9f99a071760ec6e27f047368bea34ddd9defedd9a29"
+  },
+  {
+    "module": "sms-gw",
+    "path": "deploy/policy.yaml",
+    "commit": "80b17c822eb8b47b91645b06c4ca637517af42ac",
+    "sha256": "8ee315747d81e1b08e69b61fe212ecb84648aab2cee8ebd2e84fa99e46a8fa85"
+  },
+  {
+    "module": "asterisk",
+    "path": "configs/dev.yaml",
+    "commit": "eabd8b2810fa39b670050d363ae62d7fde78600e",
+    "sha256": "668f72cd04c335b4a9f1b4524a1200889d38630508c5281597f2d819affa8586"
+  },
+  {
+    "module": "asterisk",
+    "path": "deploy/policy.yaml",
+    "commit": "eabd8b2810fa39b670050d363ae62d7fde78600e",
+    "sha256": "870f24a982002f948d18d824387cd094240c32c05fc67c184f7e0ee0c06218ef"
+  }
+]

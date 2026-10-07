@@ -1,0 +1,39 @@
+{
+  "module": "dns",
+  "service": "dns",
+  "project": "tangra-dns",
+  "admin_port": 9850,
+  "applications": [
+    "dns"
+  ],
+  "services": [
+    "check",
+    "dns",
+    "dns-secrets-init",
+    "keys-init",
+    "pdns-auth",
+    "pdns-recursor",
+    "timescaledb",
+    "valkey"
+  ],
+  "files": {
+    ".env.example": "cb8a7e3c06003cd954d51eaa4b05f890d1e6f640414c658c77f323f3a5d1ff52",
+    ".env.same-host.example": "b2d00f9ef5692f91cabd9972042dc0fa4749e36c52239b0b6d86141ad3684b7b",
+    "README.md": "d8f29ff7109f6c78589522979757bd5f70a53ad308d89d6faf9f7ca99a74bb72",
+    "compose.same-host.yaml": "8ea2c9e2c715f26aad5000a250ce170ff44296eaef4483cea7e2660f53591185",
+    "compose.yaml": "99f94ee76172af7a5db65b37d22d63c9f6f39ecab887c4b0396b3cd61ace3c0e",
+    "configs/module.yaml": "07a485417ba0293b2608937d000aa44e56a59fd2a845dbb203efc6d48468a979",
+    "configure.py": "bfd8b151b4ec1888daa6a18518ccf779b3b11ef530bbb6037636333d4ff0a71c",
+    "init-db.sql": "bdf576bf2412ff233527a55ac2636775d88d10753fc36273b92db8ab94875e44",
+    "init-keys.sh": "8d32833997f822c36a7ae066c05959f48a1affe06f71bf6b3f3918bdc37a57cb",
+    "pdns/pdns.conf": "ee3e8181db958348404f84d422e6488322ef334814983b9ad6fe2ec4404c53d1",
+    "pdns/recursor.yml": "43c5348934d9766394dab1634126661cb64cd6dca8d0c29dee1d2f68541d7c6c",
+    "policies/module.yaml": "9ef02869b88ca07e1866373d3b6d8b79a38e61ab4ed6ca1fd017a10f328f32b1"
+  },
+  "mode": "existing-core",
+  "topology": "remote-core",
+  "generated_files": [
+    "runtime/config.yaml",
+    "runtime/policy.yaml"
+  ]
+}
